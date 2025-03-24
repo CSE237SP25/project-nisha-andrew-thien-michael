@@ -1,3 +1,5 @@
+package bankApp;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -8,10 +10,11 @@ public class Account {
     private String password;
     private List<String> transactionHistory;
 
-    // For when we implement interest rate for savings, credit card, track what type of account
-    private double interestSRate;   // Savings interest rate
-    private int interestCCRate;     // Credit card interest rate
-    private char accountType;       // 'C' for Checking, 'S' for Savings
+    // For when we implement interest rate for savings, credit card, track what type
+    // of account
+    private double interestSRate; // Savings interest rate
+    private int interestCCRate; // Credit card interest rate
+    private char accountType; // 'C' for Checking, 'S' for Savings
 
     // Constructor
     public Account() {
@@ -80,7 +83,7 @@ public class Account {
         transactionHistory.add(transactionDetail);
     }
 
-    // makes sure the login password is correct. 
+    // makes sure the login password is correct.
     public boolean validatePassword(String inputPassword) {
         return inputPassword.equals(this.password);
     }

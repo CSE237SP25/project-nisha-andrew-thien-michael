@@ -1,3 +1,5 @@
+package bankApp;
+
 import java.util.Scanner;
 import java.util.HashMap;
 
@@ -15,13 +17,21 @@ public class User {
             System.out.println("2. Login");
             System.out.println("3. Exit");
             System.out.print("Choose an option: ");
-            int choice = scanner.nextInt(); scanner.nextLine();
+            int choice = scanner.nextInt();
+            scanner.nextLine();
 
             switch (choice) {
-                case 1: createAccount(); break;
-                case 2: login(); break;
-                case 3: running = false; break;
-                default: System.out.println("Invalid option.");
+                case 1:
+                    createAccount();
+                    break;
+                case 2:
+                    login();
+                    break;
+                case 3:
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Invalid option.");
             }
         }
         System.out.println("Thank you for using the app!");
@@ -47,19 +57,66 @@ public class User {
     }
 
     private static void login() {
-        System.out.print("Username: ");
-        String username = scanner.nextLine();
+        boolean loginMenuActive = true;
+        while (loginMenuActive) {
+            System.out.println("\n1. Login");
+            System.out.println("2. Forgot Password");
+            System.out.println("3. Back to Main Menu");
+            System.out.print("Choose an option: ");
+            int option = scanner.nextInt();
+            scanner.nextLine();
 
-        System.out.print("Password: ");
-        String password = scanner.nextLine();
+            switch (option) {
+                case 1:
+                    System.out.print("Username: ");
+                    String username = scanner.nextLine();
+                    System.out.print("Password: ");
+                    String password = scanner.nextLine();
+
+                    Account acc = accounts.get(username);
+                    if (acc != null && acc.validatePassword(password)) {
+                        System.out.println("Login successful!");
+                        accountMenu(acc);
+                        loginMenuActive = false; // Exit login menu after successful login and logout.
+                    } else {
+                        System.out.println("Invalid login credentials. Please try again.");
+                    }
+                    break;
+                case 2:
+                    forgotPassword();
+                    break;
+                case 3:
+                    System.out.println("Returning to main menu...");
+                    loginMenuActive = false;
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+    private static void forgotPassword() {
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        if (!accounts.containsKey(username)) {
+            System.out.println("Username does not exist.");
+            return;
+        }
+
+        System.out.print("Enter new password: ");
+        String newPassword = scanner.nextLine();
+
+        System.out.print("Confirm new Password: ");
+        String confirmPassword = scanner.nextLine();
+
+        if (!newPassword.equals(confirmPassword)) {
+            System.out.println("Passwords do not match.");
+            return;
+        }
 
         Account acc = accounts.get(username);
-        if (acc != null && acc.validatePassword(password)) {
-            System.out.println("Login successful!");
-            accountMenu(acc);
-        } else {
-            System.out.println("Invalid login credentials.");
-        }
+        acc.setPassword(newPassword);
+        System.out.println("Password updated successfully!");
     }
 
     private static void accountMenu(Account acc) {
@@ -72,19 +129,22 @@ public class User {
             System.out.println("4. View Transactions");
             System.out.println("5. Logout");
             System.out.print("Choose an option: ");
-            int option = scanner.nextInt(); scanner.nextLine();
+            int option = scanner.nextInt();
+            scanner.nextLine();
 
             switch (option) {
                 case 1:
                     System.out.print("Amount to deposit: ");
-                    double dep = scanner.nextDouble(); scanner.nextLine();
+                    double dep = scanner.nextDouble();
+                    scanner.nextLine();
                     acc.deposit(dep);
                     System.out.println("Deposit successful!");
                     break;
 
                 case 2:
                     System.out.print("Amount to withdraw: ");
-                    double wd = scanner.nextDouble(); scanner.nextLine();
+                    double wd = scanner.nextDouble();
+                    scanner.nextLine();
                     try {
                         acc.withdraw(wd);
                         System.out.println("Withdrawal successful!");
