@@ -34,4 +34,26 @@ public class BankAccountTests {
 			assertTrue(e != null);
 		}
 	}
+
+	@Test
+	public void testNotFrozenStart() {
+	    	BankAccount account = new BankAccount();
+	    	assertFalse(account.getFrozenStatus());
+	}
+
+	@Test
+	public void testFreeze(){
+	    	BankAccount account = new BankAccount();
+	    	account.freeze();
+	    	assertTrue(account.getFrozenStatus());
+	}
+
+	@Test
+	public void testUnfreeze(){
+	    	BankAcccount account = new BankAccount();
+	    	account.freeze();
+	   	assertTrue(account.getFrozenStatus());
+	    	account.unfreeze();
+	    	assertFalse(account.getFrozenStatus());
+	}
 }
