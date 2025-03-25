@@ -2,10 +2,10 @@
 
 Team Members:
 
-*
-*
-*
-*
+* Nisha Thottam
+* Andrew Wang
+* Thien Hoang
+* Michael Cho
 
 For each iteration you should answer the following:
 
