@@ -3,6 +3,7 @@ package bankapp;
 public class BankAccount {
 
 	private double balance;
+    	private boolean isFrozen;
 	
 	public BankAccount() {
 		this.balance = 0;
@@ -25,4 +26,16 @@ public class BankAccount {
 	public double getCurrentBalance() {
 		return this.balance;
 	}
+
+	public void freeze(){
+	        this.isFrozen = True;
+	}
+	
+	public void unfreeze(){
+	        this.isFrozen = False;
+	}
+	
+    	public boolean getFrozenStatus(){
+        	return this.isFrozen;
+    	}
 }
