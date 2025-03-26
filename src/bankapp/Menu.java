@@ -5,6 +5,11 @@ import java.util.Scanner;
 
 public class Menu {
     private static final Scanner scanner = new Scanner(System.in);
+    
+    public static void main(String[] args) {
+        BankAccount account = new BankAccount();
+        showMainMenu(account);
+    }
 
     public static void showMainMenu(BankAccount account) {
         boolean running = true;
