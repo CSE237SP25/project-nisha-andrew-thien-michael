@@ -2,6 +2,7 @@ package tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import org.junit.jupiter.api.Test;
@@ -65,5 +66,45 @@ public class BankAccountTests {
 	    	} catch (IllegalArgumentException e){
 	        	assertTrue(e != null);
 	    	}
+	}
+
+	@Test
+	public void testNotFrozenStart() {
+	    BankAccount account = new BankAccount();
+	    assertFalse(account.getFrozenStatus());
+	}
+	
+	@Test
+	public void testFreeze(){
+	    BankAccount account = new BankAccount();
+	    account.freeze();
+	    assertTrue(account.getFrozenStatus());
+	}
+
+	@Test
+	public void testUnfreeze(){
+	    BankAccount account = new BankAccount();
+	    account.freeze();
+	    assertTrue(account.getFrozenStatus());
+	    account.unfreeze();
+	    assertFalse(account.getFrozenStatus());
+	}
+	
+	@Test
+	public void testFrozenDeposit() {
+		BankAccount account = new BankAccount();
+		account.deposit(25);
+		account.freeze();
+		account.deposit(20);
+		assertEquals(account.getCurrentBalance(), 25.0, 0.005);
+	}
+
+	@Test
+	public void testFrozenWithdraw() {
+		BankAccount account = new BankAccount();
+		account.deposit(25);
+		account.freeze();
+		account.withdraw(20);
+		assertEquals(account.getCurrentBalance(), 25.0, 0.005);
 	}
 }
