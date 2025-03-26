@@ -10,6 +10,7 @@ public class BankAccount {
 	private boolean isFrozen;
 	
 	public BankAccount() {
+		this.balanceHistory = new ArrayList<>();
 		this.balance = 0;
 		this.isFrozen = false;
 	}
@@ -20,7 +21,9 @@ public class BankAccount {
 				throw new IllegalArgumentException();
 			}
 			this.balance += amount;
+			balanceHistory.add(this.balance);
 		}
+		
 	}
 
 	public void withdraw(double amount){
@@ -29,6 +32,7 @@ public class BankAccount {
 		        throw new IllegalArgumentException();
 		    }
 		    this.balance -= amount;
+		    balanceHistory.add(this.balance);
 		}
 	}
 	
@@ -44,9 +48,9 @@ public class BankAccount {
 		return this.balance;
 	}
 
-    public List<Double> getBalanceHistory() {
-        return new ArrayList<>(balanceHistory);
-    }
+       public List<Double> getBalanceHistory() {
+		return new ArrayList<>(balanceHistory);
+        }
 	
 	public boolean getFrozenStatus() {
 		return this.isFrozen;
