@@ -36,4 +36,5 @@ Is there anything that you implemented but doesn't currently work?
 
 # Commands to run our code
 What commands are needed to compile and run your code from the command line (please provide a script that users can run to launch your program)?
-- javac Menu.java
+- javac bankapp/*.java
+- java bankapp.Menu
