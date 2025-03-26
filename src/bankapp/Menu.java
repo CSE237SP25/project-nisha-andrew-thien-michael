@@ -5,51 +5,55 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Menu {
-	private static HashMap<String, BankAccount> accounts = new HashMap<>();
-	private static Scanner scanner = new Scanner(System.in);
+	private static final HashMap<String, BankAccount> accounts = new HashMap<>();
+	private static final Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] args) {
 		System.out.println("Welcome to the Banking App!");
-		boolean running = true;
-
-		while (running) {
-			System.out.println("\n1. Create Account");
-			System.out.println("2. Login");
-			System.out.println("3. Exit");
-			System.out.print("Choose an option: ");
-			int choice = -1;
-			try {
-				choice = scanner.nextInt();
-			} catch (InputMismatchException e) {
-				System.out.println("Invalid input. Please enter a number.");
-			} finally {
-				scanner.nextLine();
-			}
-
-			switch (choice) {
-			case 1:
-				createAccount();
-				break;
-			case 2:
-				login();
-				break;
-			case 3:
-				running = false;
-				break;
-			default:
-				if (choice != -1) {
-					System.out.println("Invalid option.");
-				}
-			}
-		}
+		runMainMenu();
 		System.out.println("Thank you for using the app!");
 		scanner.close();
 	}
 
-	private static void createAccount() {
-		System.out.print("Enter username: ");
-		String username = scanner.nextLine().trim();
+	private static void runMainMenu() {
+		boolean running = true;
 
+		while (running) {
+			printMainMenuOptions();
+			int choice = getUserIntInput();
+
+			switch (choice) {
+				case 1 -> createAccount();
+				case 2 -> login();
+				case 3 -> running = false;
+				default -> {
+					if (choice != -1) System.out.println("Invalid option.");
+				}
+			}
+		}
+	}
+
+	private static void printMainMenuOptions() {
+		System.out.println("\n1. Create Account");
+		System.out.println("2. Login");
+		System.out.println("3. Exit");
+		System.out.print("Choose an option: ");
+	}
+
+	private static int getUserIntInput() {
+		int choice = -1;
+		try {
+			choice = scanner.nextInt();
+		} catch (InputMismatchException e) {
+			System.out.println("Invalid input. Please enter a number.");
+		} finally {
+			scanner.nextLine();
+		}
+		return choice;
+	}
+
+	private static void createAccount() {
+		String username = promptForInput("Enter username: ").trim();
 		if (username.isEmpty()) {
 			System.out.println("Username cannot be empty.");
 			return;
@@ -60,9 +64,7 @@ public class Menu {
 			return;
 		}
 
-		System.out.print("Enter password: ");
-		String password = scanner.nextLine();
-
+		String password = promptForInput("Enter password: ");
 		if (password.isEmpty()) {
 			System.out.println("Password cannot be empty.");
 			return;
@@ -78,89 +80,82 @@ public class Menu {
 
 	private static void login() {
 		boolean loginMenuActive = true;
-		while (loginMenuActive) {
-			System.out.println("\n1. Login");
-			System.out.println("2. Forgot Password");
-			System.out.println("3. Back to Main Menu");
-			System.out.print("Choose an option: ");
 
-			int option = -1;
-			try {
-				option = scanner.nextInt();
-			} catch (InputMismatchException e) {
-				System.out.println("Invalid input. Please enter a number.");
-			} finally {
-				scanner.nextLine();
-			}
+		while (loginMenuActive) {
+			printLoginMenuOptions();
+			int option = getUserIntInput();
 
 			switch (option) {
-			case 1:
-				System.out.print("Username: ");
-				String username = scanner.nextLine();
-				System.out.print("Password: ");
-				String password = scanner.nextLine();
-
-				BankAccount acc = accounts.get(username);
-				if (acc != null && acc.validatePassword(password)) {
-					System.out.println("Login successful!");
-					accountMenu(acc);
+				case 1 -> handleLogin();
+				case 2 -> forgotPassword();
+				case 3 -> {
+					System.out.println("Returning to main menu...");
 					loginMenuActive = false;
-				} else {
-					System.out.println("Invalid login credentials. Please try again.");
 				}
-				break;
-			case 2:
-				forgotPassword();
-				break;
-			case 3:
-				System.out.println("Returning to main menu...");
-				loginMenuActive = false;
-				break;
-			default:
-				if (option != -1) {
-					System.out.println("Invalid option. Please try again.");
+				default -> {
+					if (option != -1) System.out.println("Invalid option. Please try again.");
 				}
 			}
 		}
 	}
 
+	private static void printLoginMenuOptions() {
+		System.out.println("\n1. Login");
+		System.out.println("2. Forgot Password");
+		System.out.println("3. Back to Main Menu");
+		System.out.print("Choose an option: ");
+	}
+
+	private static void handleLogin() {
+		String username = promptForInput("Username: ");
+		String password = promptForInput("Password: ");
+
+		BankAccount acc = accounts.get(username);
+		if (acc != null && acc.validatePassword(password)) {
+			System.out.println("Login successful!");
+			accountMenu(acc);
+		} else {
+			System.out.println("Invalid login credentials. Please try again.");
+		}
+	}
+
 	private static void forgotPassword() {
-		 System.out.print("Enter username: ");
-         String username = scanner.nextLine();
-         if (!accounts.containsKey(username)) {
-             System.out.println("Username does not exist.");
-             return;
-         }
+		String username = promptForInput("Enter username: ");
+		if (!accounts.containsKey(username)) {
+			System.out.println("Username does not exist.");
+			return;
+		}
 
-         System.out.print("Enter new password: ");
-         String newPassword = scanner.nextLine();
+		String newPassword = promptForInput("Enter new password: ");
+		if (newPassword.isEmpty()) {
+			System.out.println("Password cannot be empty.");
+			return;
+		}
 
-         if (newPassword.isEmpty()) {
-             System.out.println("Password cannot be empty.");
-             return;
-        }
+		String confirmPassword = promptForInput("Confirm new password: ");
+		if (!newPassword.equals(confirmPassword)) {
+			System.out.println("Passwords do not match.");
+			return;
+		}
 
-         System.out.print("Confirm new Password: ");
-         String confirmPassword = scanner.nextLine();
+		accounts.get(username).setPassword(newPassword);
+		System.out.println("Password updated successfully!");
+	}
 
-         if (!newPassword.equals(confirmPassword)) {
-             System.out.println("Passwords do not match.");
-             return;
-         }
+	private static void accountMenu(BankAccount acc) {
+		boolean loggedIn = true;
 
-         BankAccount acc = accounts.get(username);
-         acc.setPassword(newPassword);
-         System.out.println("Password updated successfully!");
-     }
+		while (loggedIn) {
+			System.out.println("\nWelcome, " + acc.getUsername());
+			System.out.println("(Account menu - press Enter to logout)");
+			scanner.nextLine(); // simulate menu interaction
+			loggedIn = false;
+		}
+		System.out.println("Logged out.");
+	}
 
-     private static void accountMenu(BankAccount acc) {
-         boolean loggedIn = true;
-         while (loggedIn) {
-             System.out.println("\nWelcome, " + acc.getUsername());
-             System.out.println("(Account menu - press Enter to 'logout' for now)");
-             scanner.nextLine();
-             loggedIn = false;
-         }
-         System.out.println("Logged out.");
-     }
+	private static String promptForInput(String prompt) {
+		System.out.print(prompt);
+		return scanner.nextLine();
+	}
 }
