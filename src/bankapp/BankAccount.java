@@ -9,7 +9,12 @@ public class BankAccount {
 	private List<Double> balanceHistory;
 	private boolean isFrozen;
 	
+	private String username;
+	private String password;
+	
 	public BankAccount() {
+		this.username = "";
+		this.password = "";
 		this.balanceHistory = new ArrayList<>();
 		this.balance = 0;
 		this.isFrozen = false;
@@ -48,6 +53,25 @@ public class BankAccount {
 	public double getCurrentBalance() {
 		return this.balance;
 	}
+	
+	public void setUsername(String u) {
+		this.username = u;
+	}
+	
+	public void setPassword(String p) {
+		this.password = p;
+	}
+	
+	public String getUsername() {
+		return this.username;
+	}
+	
+	public String getPassword() {
+		return this.password;
+	}
+	
+	public boolean validatePassword(String inputPassword) {
+		return inputPassword != null && inputPassword.equals(this.password);
 
        public List<Double> getBalanceHistory() {
 		return new ArrayList<>(balanceHistory);
