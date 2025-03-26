@@ -11,6 +11,7 @@ public class BankAccount {
 	
 	public BankAccount() {
 		this.balanceHistory = new ArrayList<>();
+		balanceHistory.add(this.balance);
 		this.balance = 0;
 		this.isFrozen = false;
 	}
