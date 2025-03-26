@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
+import java.util.list
 
 import org.junit.jupiter.api.Test;
 
@@ -69,6 +70,20 @@ public class BankAccountTests {
 	}
 
 	@Test
+    public void testBalanceHistoryTracking() {
+        BankAccount account = new BankAccount();
+        account.deposit(50);      // 0 -> 50
+        account.withdraw(20);     // 50 -> 30
+        account.deposit(10);      // 30 -> 40
+
+        List<Double> history = account.getBalanceHistory();
+
+        assertEquals(4, history.size()); // [0.0, 50.0, 30.0, 40.0]
+        assertEquals(0.0, history.get(0), 0.001);
+        assertEquals(50.0, history.get(1), 0.001);
+        assertEquals(30.0, history.get(2), 0.001);
+        assertEquals(40.0, history.get(3), 0.001);
+    }
 	public void testNotFrozenStart() {
 	    BankAccount account = new BankAccount();
 	    assertFalse(account.getFrozenStatus());
