@@ -1,10 +1,14 @@
 package bankapp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BankAccount {
 
 	private double balance;
+	private List<Double> balanceHistory;
 	
-	public BankAccount() {
+	public BankAccount() {t
 		this.balance = 0;
 	}
 	
@@ -25,4 +29,8 @@ public class BankAccount {
 	public double getCurrentBalance() {
 		return this.balance;
 	}
+
+    public List<Double> getBalanceHistory() {
+        return new ArrayList<>(balanceHistory);
+    }
 }
