@@ -60,13 +60,11 @@ Is there anything that you implemented but doesn't currently work?
 - our login and signup may not work
 - Login and Setup from UserMenu test does not work because of merging conflict, but the logic and functionality should still operate once Menu is fully operative. Will be fixed
 
-Commands to run our code
-
+# Commands to run our code
 What commands are needed to compile and run your code from the command line (please provide a script that users can run to launch your program)?
 
     Open Eclipse and run Menu.java to operate the bank app.
     Run the Unit Tests to check if the functionalities of the logic in our bank app operate successfully.
-# Commands to run our code
-What commands are needed to compile and run your code from the command line (please provide a script that users can run to launch your program)?
+
 - javac bankapp/*.java
 - java bankapp.Menu
