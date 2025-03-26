@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
-import java.util.list
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -121,5 +121,41 @@ public class BankAccountTests {
 		account.freeze();
 		account.withdraw(20);
 		assertEquals(account.getCurrentBalance(), 25.0, 0.005);
+	}
+	
+	@Test
+	public void testSetUsername() {
+		BankAccount account = new BankAccount();
+		account.setUsername("andrew");
+		assertEquals(account.getUsername(), "andrew");
+	}
+	
+	@Test
+	public void testSetPassword() {
+		BankAccount account = new BankAccount();
+		account.setPassword("hello");
+		assertEquals(account.getPassword(), "hello");
+	}
+	
+	@Test
+	public void testCorrectPasswordValidation() {
+		BankAccount account = new BankAccount();
+		account.setPassword("hello");
+		assertTrue(account.validatePassword("hello"));
+	}
+	
+	@Test
+	public void testIncorrectPasswordValidation() {
+		BankAccount account = new BankAccount();
+		account.setPassword("hello");
+		assertFalse(account.validatePassword("hi"));
+	}
+	
+
+	@Test
+	public void testNullPasswordValidation() {
+		BankAccount account = new BankAccount();
+		account.setPassword(null);
+		assertFalse(account.validatePassword(null));
 	}
 }
