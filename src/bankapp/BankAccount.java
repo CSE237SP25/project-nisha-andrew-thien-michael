@@ -7,23 +7,37 @@ public class BankAccount {
 
 	private double balance;
 	private List<Double> balanceHistory;
+	private boolean isFrozen;
 	
-	public BankAccount() {t
+	public BankAccount() {
 		this.balance = 0;
+		this.isFrozen = false;
 	}
 	
 	public void deposit(double amount) {
-		if(amount < 0) {
-			throw new IllegalArgumentException();
+		if(!this.isFrozen) {
+			if(amount < 0) {
+				throw new IllegalArgumentException();
+			}
+			this.balance += amount;
 		}
-		this.balance += amount;
 	}
 
 	public void withdraw(double amount){
-	        if(amount < 0 || amount > this.balance()){
-	        	throw new IllegalArgumentException();
-	        }
-	        this.balance -= amount;        
+		if(!this.isFrozen) {
+			if(amount < 0 || amount > this.balance){
+		        throw new IllegalArgumentException();
+		    }
+		    this.balance -= amount;
+		}
+	}
+	
+	public void freeze() {
+		this.isFrozen = true;
+	}
+	
+	public void unfreeze() {
+		this.isFrozen = false;
 	}
 	
 	public double getCurrentBalance() {
@@ -33,4 +47,8 @@ public class BankAccount {
     public List<Double> getBalanceHistory() {
         return new ArrayList<>(balanceHistory);
     }
+	
+	public boolean getFrozenStatus() {
+		return this.isFrozen;
+	}
 }
