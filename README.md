@@ -57,7 +57,8 @@ A bank customer should be able to
 # Attempted tasks that do not work yet
 Is there anything that you implemented but doesn't currently work?
 - we started to implement the view previous transactions, but it does not currently work. We have planned this for the next iteration. 
-- our login and signup may not work 
+- our login and signup may not work
+- Login and Setup from UserMenu test does not work because of merging conflict, but the logic and functionality should still operate once Menu is fully operative. Will be fixed
 
 Commands to run our code
 
