@@ -72,6 +72,7 @@ public class BankAccount {
 	
 	public boolean validatePassword(String inputPassword) {
 		return inputPassword != null && inputPassword.equals(this.password);
+	}
 
        public List<Double> getBalanceHistory() {
 		return new ArrayList<>(balanceHistory);
