@@ -66,4 +66,21 @@ public class BankAccountTests {
 	        	assertTrue(e != null);
 	    	}
 	}
+
+	@Test
+	public void testTransactionHistoryRecordsCorrectly() {
+		BankAccount account = new BankAccount();
+
+		account.deposit(100.0);
+		account.withdraw(40.0);
+		account.deposit(25.5);
+
+		List<String> history = account.getTransactionHistory();
+
+		assertEquals(3, history.size());
+
+		assertEquals("Deposited: $100.0", history.get(0));
+		assertEquals("Withdrew: $40.0", history.get(1));
+		assertEquals("Deposited: $25.5", history.get(2));
+	}
 }
