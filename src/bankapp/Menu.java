@@ -12,13 +12,18 @@ public class Menu {
     
     public static void main(String[] args) {
         System.out.println("Welcome to the Banking App!");
-        boolean appRunning = true;
-        
-        while(appRunning) {
-        	if(loggedInAccount == null) {
-        		showAuthMenu();
-        		int authChoice = getUserAuthOption();
-        		switch(authChoice) {
+        runApplication();
+        System.out.println("Thank you for using the app! Exiting.");
+        scanner.close();
+    }
+    
+    private static void runApplication() {
+    	boolean appRunning = true;
+    	while(appRunning) {
+    		if(loggedInAccount == null) {
+    			showAuthMenu();
+    			int authChoice = getUserAuthOption();
+    			switch(authChoice) {
         		case 1:
         			createAccount();
         			break;
@@ -38,8 +43,6 @@ public class Menu {
         		showMainMenu(loggedInAccount);
         	}
         }
-        System.out.println("Thank you for using the app! Exiting.");
-        scanner.close();
     }
     
     private static void showAuthMenu() {
