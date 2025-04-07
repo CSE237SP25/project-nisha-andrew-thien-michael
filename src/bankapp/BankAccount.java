@@ -13,6 +13,9 @@ public class BankAccount {
 	private List<Transaction> transactions;
 	private String username;
 	private String password;
+	private String accountName;
+
+
 	
 	public BankAccount() {
 		this.username = "";
@@ -20,6 +23,7 @@ public class BankAccount {
 		this.balanceHistory = new ArrayList<>();
 		this.balance = 0;
 		this.isFrozen = false;
+		this.accountName = "";
 		this.transactions = new ArrayList<>();
 		balanceHistory.add(this.balance);
 	}
@@ -81,13 +85,21 @@ public class BankAccount {
 		return inputPassword != null && inputPassword.equals(this.password);
 	}
 
-       public List<Double> getBalanceHistory() {
+    public List<Double> getBalanceHistory() {
 		return new ArrayList<>(balanceHistory);
-        }
+    }
 	
 	public boolean getFrozenStatus() {
 		return this.isFrozen;
 	}
+
+	public void setAccountName(String name) {
+		this.accountName = name;
+	}
+
+	public String getAccountName() {
+		return this.accountName;
+  }
 	
 	public List<Transaction> getTransactions() {
 	    return new ArrayList<>(transactions);

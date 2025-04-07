@@ -161,6 +161,14 @@ public class BankAccountTests {
 		account.setPassword(null);
 		assertFalse(account.validatePassword(null));
 	}
+
+	@Test
+	public void testSetAndGetAccountName() {
+		BankAccount account = new BankAccount();
+		account.setAccountName("Vacation Fund");
+		assertEquals("Vacation Fund", account.getAccountName());
+	}
+
 	
 	@Test
 	public void testTransactionTracking() {
@@ -183,5 +191,4 @@ public class BankAccountTests {
 	    assertTrue(second.toString().contains("50.0"));
 	}
 
-	
 }

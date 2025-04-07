@@ -118,7 +118,8 @@ public class Menu {
     			String password = scanner.nextLine();
     			BankAccount acc = accounts.get(username);
     			if(acc != null && acc.validatePassword(password)) {
-    				System.out.println("\nLogin successful! Welcome " + acc.getUsername() + ".");
+    				System.out.println("\nLogin successful! Welcome " + acc.getUsername() + 
+    				(acc.getAccountName().isEmpty() ? "" : " to your '" + acc.getAccountName() + "' account") + ".");
     				loggedInAccount = acc;
     				loginMenuActive = false;
     			}
@@ -187,6 +188,7 @@ public class Menu {
         System.out.println("3. Withdraw");
         System.out.println("4. View Balance History");
         System.out.println("5. Exit");
+		    System.out.println("6. Set Account Name");
         System.out.println("7. View Transaction History");
         System.out.print("Choose an option: ");
     }
@@ -218,10 +220,12 @@ public class Menu {
             case 5:
                 System.out.println("Goodbye!");
                 return false;
+			      case 6:
+                setAccountName(account);
+                break;
             case 7:
                 showTransactionHistory(account);
                 break;
-                
             default:
                 System.out.println("Invalid option. Try again.");
         }
@@ -273,6 +277,18 @@ public class Menu {
             System.out.println("Step " + i + ": $" + history.get(i));
         }
     }
+
+    private static void setAccountName(BankAccount account) {
+      System.out.print("Enter a name for your account: ");
+      String name = scanner.nextLine().trim();
+      if (name.isEmpty()) {
+        System.out.println("Account name cannot be empty.");
+      } else {
+        account.setAccountName(name);
+        System.out.println("Account name set to: " + account.getAccountName());
+      }
+    }
+
     
     private static void showTransactionHistory(BankAccount account) {
         List<Transaction> transactions = account.getTransactions();
