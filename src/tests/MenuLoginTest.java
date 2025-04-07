@@ -111,16 +111,20 @@ public class MenuLoginTest {
     }
 
 
-    @Test
-    void testLogin_Success() throws Exception {
-    	String createInput = "loginUser\nloginPass\n";
-    	runStaticMenuMethodWithInput(createInput, "createAccount");
+     @Test
+     void testLogin_Success() throws Exception {
+         String createInput = "loginUser\nloginPass\n";
+         runStaticMenuMethodWithInput(createInput, "createAccount");
+         BankAccount account = getAccountsMap().get("loginUser");
+         account.setAccountName("My Savings");
 
-    	String loginInput = "1\nloginUser\nloginPass\n\n";
-    	String loginOutput = runStaticMenuMethodWithInput(loginInput, "login");
+         String loginInput = "1\nloginUser\nloginPass\n\n";
+         String loginOutput = runStaticMenuMethodWithInput(loginInput, "login");
 
-    	 assertTrue(loginOutput.contains("Login successful!"), "Output should confirm successful login.");
-    }
+         assertTrue(loginOutput.contains("Login successful! Welcome loginUser to your 'My Savings' account."),
+             "Output should confirm successful login with account name.");
+     }
+
 
     @Test
     void testLogin_WrongPassword() throws Exception {
