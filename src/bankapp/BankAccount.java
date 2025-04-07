@@ -2,13 +2,15 @@ package bankapp;
 
 import java.util.ArrayList;
 import java.util.List;
+import bankapp.Transaction;
+
 
 public class BankAccount {
 
 	private double balance;
 	private List<Double> balanceHistory;
 	private boolean isFrozen;
-	
+	private List<Transaction> transactions;
 	private String username;
 	private String password;
 	private String accountName;
@@ -22,6 +24,7 @@ public class BankAccount {
 		this.balance = 0;
 		this.isFrozen = false;
 		this.accountName = "";
+		this.transactions = new ArrayList<>();
 		balanceHistory.add(this.balance);
 	}
 	
@@ -32,6 +35,8 @@ public class BankAccount {
 			}
 			this.balance += amount;
 			balanceHistory.add(this.balance);
+			this.transactions.add(new Transaction("deposit", amount));
+
 		}
 		
 	}
@@ -43,6 +48,8 @@ public class BankAccount {
 		    }
 		    this.balance -= amount;
 		    balanceHistory.add(this.balance);
+		    this.transactions.add(new Transaction("withdraw", amount));
+
 		}
 	}
 	
@@ -92,7 +99,10 @@ public class BankAccount {
 
 	public String getAccountName() {
 		return this.accountName;
+  }
+	
+	public List<Transaction> getTransactions() {
+	    return new ArrayList<>(transactions);
 	}
 
-	
 }

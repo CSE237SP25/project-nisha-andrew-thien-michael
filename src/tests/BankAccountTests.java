@@ -5,6 +5,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import java.util.List;
+import bankapp.Transaction;
+import java.time.LocalDateTime;
+
 
 import org.junit.jupiter.api.Test;
 
@@ -164,6 +167,28 @@ public class BankAccountTests {
 		BankAccount account = new BankAccount();
 		account.setAccountName("Vacation Fund");
 		assertEquals("Vacation Fund", account.getAccountName());
+	}
+
+	
+	@Test
+	public void testTransactionTracking() {
+	    BankAccount account = new BankAccount();
+
+	    account.deposit(150.00);
+	    account.withdraw(50.00);
+
+	    List<Transaction> transactions = account.getTransactions();
+
+	    assertEquals(2, transactions.size());
+
+	    Transaction first = transactions.get(0);
+	    Transaction second = transactions.get(1);
+
+	    assertTrue(first.toString().contains("deposit"));
+	    assertTrue(first.toString().contains("150.0"));
+
+	    assertTrue(second.toString().contains("withdraw"));
+	    assertTrue(second.toString().contains("50.0"));
 	}
 
 }
