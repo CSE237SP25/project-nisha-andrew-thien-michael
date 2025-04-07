@@ -187,12 +187,13 @@ public class Menu {
         System.out.println("3. Withdraw");
         System.out.println("4. View Balance History");
         System.out.println("5. Exit");
+        System.out.println("7. View Transaction History");
         System.out.print("Choose an option: ");
     }
 
     private static int getUserOption() {
         while (!scanner.hasNextInt()) {
-            System.out.println("Invalid input. Please enter a number between 1 and 5.");
+            System.out.println("Invalid input. Please enter a number between 1 and 7.");
             scanner.next();
         }
         int option = scanner.nextInt();
@@ -217,6 +218,10 @@ public class Menu {
             case 5:
                 System.out.println("Goodbye!");
                 return false;
+            case 7:
+                showTransactionHistory(account);
+                break;
+                
             default:
                 System.out.println("Invalid option. Try again.");
         }
@@ -268,4 +273,17 @@ public class Menu {
             System.out.println("Step " + i + ": $" + history.get(i));
         }
     }
+    
+    private static void showTransactionHistory(BankAccount account) {
+        List<Transaction> transactions = account.getTransactions();
+        if (transactions.isEmpty()) {
+            System.out.println("No transactions yet.");
+        } else {
+            System.out.println("Transaction History:");
+            for (Transaction t : transactions) {
+                System.out.println(t);
+            }
+        }
+    }
+
 }
