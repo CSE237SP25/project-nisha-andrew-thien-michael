@@ -5,9 +5,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import java.util.List;
-import bankapp.Transaction;
-import java.time.LocalDateTime;
-
 
 import org.junit.jupiter.api.Test;
 
@@ -70,57 +67,6 @@ public class BankAccountTests {
 	    	} catch (IllegalArgumentException e){
 	        	assertTrue(e != null);
 	    	}
-	}
-	
-
-	@Test
-	public void testMultipleDeposit() {
-		BankAccount account = new BankAccount();
-		account.depositMultiplePeriods(5, 3);
-		assertEquals(account.getCurrentBalance(), 15.0, 0.005);
-	}
-	
-	@Test
-	public void testMultipleNegativeDeposit() {
-		BankAccount account = new BankAccount();
-    	try {
-        	account.depositMultiplePeriods(-5, 3);
-        	fail();
-    	} catch (IllegalArgumentException e){
-        	assertTrue(e != null);
-    	}
-	}
-	
-	@Test
-	public void testMultipleWithdraw() {
-		BankAccount account = new BankAccount();
-		account.deposit(25);
-		account.withdrawMultiplePeriods(5, 3);
-		assertEquals(account.getCurrentBalance(), 10.0, 0.005);
-	}
-
-	@Test
-	public void testMultipleNegativeWithdraw() {
-		BankAccount account = new BankAccount();
-    		try {
-        		account.withdrawMultiplePeriods(-5, 3);
-        		fail();
-    		} catch (IllegalArgumentException e){
-        		assertTrue(e != null);
-    		}
-	}
-	
-
-	@Test
-	public void testMultipleIllegalWithdraw() {
-		BankAccount account = new BankAccount();
-		account.deposit(10);
-    		try {
-        		account.withdrawMultiplePeriods(5, 3);
-        		fail();
-    		} catch (IllegalArgumentException e){
-        		assertTrue(e != null);
-    		}
 	}
 
 	@Test
@@ -212,34 +158,4 @@ public class BankAccountTests {
 		account.setPassword(null);
 		assertFalse(account.validatePassword(null));
 	}
-
-	@Test
-	public void testSetAndGetAccountName() {
-		BankAccount account = new BankAccount();
-		account.setAccountName("Vacation Fund");
-		assertEquals("Vacation Fund", account.getAccountName());
-	}
-
-	
-	@Test
-	public void testTransactionTracking() {
-	    BankAccount account = new BankAccount();
-
-	    account.deposit(150.00);
-	    account.withdraw(50.00);
-
-	    List<Transaction> transactions = account.getTransactions();
-
-	    assertEquals(2, transactions.size());
-
-	    Transaction first = transactions.get(0);
-	    Transaction second = transactions.get(1);
-
-	    assertTrue(first.toString().contains("deposit"));
-	    assertTrue(first.toString().contains("150.0"));
-
-	    assertTrue(second.toString().contains("withdraw"));
-	    assertTrue(second.toString().contains("50.0"));
-	}
-
 }

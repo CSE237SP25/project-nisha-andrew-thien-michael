@@ -2,20 +2,15 @@ package bankapp;
 
 import java.util.ArrayList;
 import java.util.List;
-import bankapp.Transaction;
-
 
 public class BankAccount {
 
 	private double balance;
 	private List<Double> balanceHistory;
 	private boolean isFrozen;
-	private List<Transaction> transactions;
+	
 	private String username;
 	private String password;
-	private String accountName;
-
-
 	
 	public BankAccount() {
 		this.username = "";
@@ -23,8 +18,6 @@ public class BankAccount {
 		this.balanceHistory = new ArrayList<>();
 		this.balance = 0;
 		this.isFrozen = false;
-		this.accountName = "";
-		this.transactions = new ArrayList<>();
 		balanceHistory.add(this.balance);
 	}
 	
@@ -35,8 +28,6 @@ public class BankAccount {
 			}
 			this.balance += amount;
 			balanceHistory.add(this.balance);
-			this.transactions.add(new Transaction("deposit", amount));
-
 		}
 		
 	}
@@ -48,29 +39,7 @@ public class BankAccount {
 		    }
 		    this.balance -= amount;
 		    balanceHistory.add(this.balance);
-		    this.transactions.add(new Transaction("withdraw", amount));
-
 		}
-	}
-
-	public void depositMultiplePeriods(double amount, int periods) {
-		if (amount < 0 || periods <= 0) {
-	        	throw new IllegalArgumentException();
-	    	}
-	    
-	    	for (int i = 0; i < periods; i++) {
-	        	this.deposit(amount);
-	    	}
-	}
-
-	public void withdrawMultiplePeriods(double amount, int periods) {
-	    	if (amount < 0 || periods <= 0 || amount * periods > this.balance) {
-	        	throw new IllegalArgumentException();
-	    	}
-	    
-	    	for (int i = 0; i < periods; i++) {
-	        	this.withdraw(amount);
-	    	}
 	}
 	
 	public void freeze() {
@@ -105,24 +74,11 @@ public class BankAccount {
 		return inputPassword != null && inputPassword.equals(this.password);
 	}
 
-    public List<Double> getBalanceHistory() {
+       public List<Double> getBalanceHistory() {
 		return new ArrayList<>(balanceHistory);
-    }
+        }
 	
 	public boolean getFrozenStatus() {
 		return this.isFrozen;
 	}
-
-	public void setAccountName(String name) {
-		this.accountName = name;
-	}
-
-	public String getAccountName() {
-		return this.accountName;
-  }
-	
-	public List<Transaction> getTransactions() {
-	    return new ArrayList<>(transactions);
-	}
-
 }
