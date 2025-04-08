@@ -32,6 +32,8 @@ What user stories do you intend to complete next iteration? A bank customer shou
     set monthly spending limits
     forget password
     see a welcome message when they log in
+    see a receipt for a transaction after it's done
+    make transactions over multiple periods
 
 Attempted tasks that do not work yet
 # User Stories for Iteration 1
