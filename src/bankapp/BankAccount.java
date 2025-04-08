@@ -52,6 +52,26 @@ public class BankAccount {
 
 		}
 	}
+
+	public void depositMultiplePeriods(double amount, int periods) {
+		if (amount < 0 || periods <= 0) {
+	        	throw new IllegalArgumentException();
+	    	}
+	    
+	    	for (int i = 0; i < periods; i++) {
+	        	this.deposit(amount);
+	    	}
+	}
+
+	public void withdrawMultiplePeriods(double amount, int periods) {
+	    	if (amount < 0 || periods <= 0 || amount * periods > this.balance) {
+	        	throw new IllegalArgumentException();
+	    	}
+	    
+	    	for (int i = 0; i < periods; i++) {
+	        	this.withdraw(amount);
+	    	}
+	}
 	
 	public void freeze() {
 		this.isFrozen = true;
