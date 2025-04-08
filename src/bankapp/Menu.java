@@ -222,17 +222,18 @@ public class Menu {
         System.out.println("5. Exit");
 		    System.out.println("6. Set Account Name");
         System.out.println("7. View Transaction History");
+        System.out.println("8. View Transaction Count");
         System.out.print("Choose an option: ");
     }
 
     private int getUserMenuOption() {
     	int choice = -1;
-    	while(choice < 1 || choice > 7) {
-    		System.out.print("Choose an option (1-7): ");
+    	while(choice < 1 || choice > 8) {
+    		System.out.print("Choose an option (1-8): ");
     		try {
     			choice = this.scanner.nextInt();
-    			if(choice < 1 || choice > 7) {
-    				System.out.println("Invalid choice. Please enter a number between 1 and 7.");
+    			if(choice < 1 || choice > 8) {
+    				System.out.println("Invalid choice. Please enter a number between 1 and 8.");
     				choice = -1;
     			}
     		}
@@ -275,6 +276,9 @@ public class Menu {
             case 7:
                 showTransactionHistory();
                 break;
+            case 8:
+            	showTransactionCount();
+            	break;
         }
         return true;
     }
@@ -347,6 +351,11 @@ public class Menu {
                 System.out.println(t);
             }
         }
+    }
+    
+    private void showTransactionCount() {
+    	int count = this.loggedInAccount.getTransactions().size();
+    	System.out.println("\nTotal transactions performed: " + count);
     }
 
 }

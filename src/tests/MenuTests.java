@@ -11,23 +11,58 @@ import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.Scanner;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import bankapp.BankAccount;
 import bankapp.Menu;
 
 public class MenuTests {
+	
+	private final PrintStream originalOut = System.out;
+	private final InputStream originalIn = System.in;
+	private ByteArrayOutputStream testOut;
+	private Menu testMenuInstance;
+	
+	
+	private void setMenuScanner(Menu menuInstance, InputStream inputStream) throws Exception {
+		Field scannerField = Menu.class.getDeclaredField("scanner");
+		scannerField.setAccessible(true);
+		scannerField.set(menuInstance, new Scanner(inputStream));
+	}
+	
+	private void setLoggedInAccount(Menu menuInstance, BankAccount account) throws Exception {
+		Field loggedInField = Menu.class.getDeclaredField("loggedInAccount");
+		loggedInField.setAccessible(true);
+		loggedInField.set(menuInstance, account);
+	}
+	
+	@BeforeEach
+	public void setupTest() {
+		testMenuInstance = new Menu();
+		testOut = new ByteArrayOutputStream();
+		System.setOut(new PrintStream(testOut));
+	}
+	
+	@AfterEach
+	public void restoreSystemStreams() {
+		System.setOut(originalOut);
+		System.setIn(originalIn);
+		try {
+			Field scannerField = Menu.class.getDeclaredField("scanner");
+			scannerField.setAccessible(true);
+			Scanner instanceScanner = (Scanner) scannerField.get(testMenuInstance);
+		}
+		catch (Exception e) {
+			
+		}
+	}
 
     @Test
     public void testBalanceHistoryOptionDisplaysCorrectly() {
         String simulatedInput = "4" + System.lineSeparator() + "5" + System.lineSeparator();
 
-        InputStream originalIn = System.in;
-        PrintStream originalOut = System.out;
-        ByteArrayOutputStream testOut = new ByteArrayOutputStream();
-        ByteArrayInputStream testIn = new ByteArrayInputStream(simulatedInput.getBytes());
-
-        Menu testMenuInstance = new Menu();
         BankAccount account = new BankAccount();
         account.setUsername("testUser");
 
@@ -38,18 +73,13 @@ public class MenuTests {
             fail("Test setup failed: direct deposit/withdraw: " + e.getMessage());
         }
         assertEquals(3, account.getBalanceHistory().size(), "Pre-condition: Account history size incorrect.");
-
+        ByteArrayInputStream testIn = new ByteArrayInputStream(simulatedInput.getBytes());
+   
+        
         try {
-            System.setOut(new PrintStream(testOut));
-
-            Field loggedInField = Menu.class.getDeclaredField("loggedInAccount");
-            loggedInField.setAccessible(true);
-            loggedInField.set(testMenuInstance, account);
-
-            Field scannerField = Menu.class.getDeclaredField("scanner");
-            scannerField.setAccessible(true);
-            scannerField.set(testMenuInstance, new Scanner(testIn));
-
+            setLoggedInAccount(testMenuInstance, account);
+            setMenuScanner(testMenuInstance, testIn);
+            
             testMenuInstance.showMainMenu();
 
             String output = testOut.toString().replace("\r\n", "\n");
@@ -61,9 +91,69 @@ public class MenuTests {
 
         } catch (Exception e) {
             fail("Test failed due to exception: " + e.getMessage(), e);
-        } finally {
-            System.setOut(originalOut);
-            System.setIn(originalIn);
-        }
+        } 
+    }
+    
+    
+    @Test
+    public void testTransactionCountOptionDisplaysZero() {
+    	String simulatedInput = "8" + System.lineSeparator() + "5" + System.lineSeparator();
+    	
+    	BankAccount account = new BankAccount();
+    	account.setUsername("zeroTxUser");
+    	
+    	assertEquals(0, account.getTransactions().size(), "Pre-condition failed: Should be 0 transactions.");
+    	
+    	ByteArrayInputStream testIn = new ByteArrayInputStream(simulatedInput.getBytes());
+    	
+    	try {
+    		setLoggedInAccount(testMenuInstance, account);
+    		setMenuScanner(testMenuInstance, testIn);
+    		
+    		testMenuInstance.showMainMenu();
+    		
+    		String output = testOut.toString().replace("\r\n", "\n");
+    		
+    		assertTrue(output.contains("Total transactions performed: 0"), "Output should show 0 transactions. Output was: " + output);
+    		
+    	}
+    	catch (Exception e) {
+    		fail("Test execution failed: " + e.getMessage(), e);
+    	}
+    }
+    
+    
+    
+    @Test
+    public void testTransactionCountOptionDisplaysMultiple() {
+    	String simulatedInput = "8" + System.lineSeparator() + "5" + System.lineSeparator();
+    	
+    	BankAccount account = new BankAccount();
+    	account.setUsername("multiTxUser");
+    	
+    	try {
+    		account.deposit(100.0);
+    		account.withdraw(25.0);
+    		account.deposit(50.0);
+    	}
+    	catch(IllegalArgumentException e) {
+    		fail("Test setup failed during direct deposit/withdraw: " + e.getMessage());
+    	}
+    	
+    	assertEquals(3, account.getTransactions().size(), "Pre-condition failed: Should be 3 transactions.");
+    	ByteArrayInputStream testIn = new ByteArrayInputStream(simulatedInput.getBytes());
+    	
+    	try {
+    		setLoggedInAccount(testMenuInstance, account);
+    		setMenuScanner(testMenuInstance, testIn);
+    		testMenuInstance.showMainMenu();
+    		
+    		String output = testOut.toString().replace("\r\n", "\n");
+    		
+    		assertTrue(output.contains("Total transactions performed: 3"), "Output should show 3 transactions. Output was: " + output);
+    	}
+    	catch (Exception e) {
+    		fail("Test execution failed: " + e.getMessage(), e);
+    	}
     }
 }
