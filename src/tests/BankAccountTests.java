@@ -71,6 +71,57 @@ public class BankAccountTests {
 	        	assertTrue(e != null);
 	    	}
 	}
+	
+
+	@Test
+	public void testMultipleDeposit() {
+		BankAccount account = new BankAccount();
+		account.depositMultiplePeriods(5, 3);
+		assertEquals(account.getCurrentBalance(), 15.0, 0.005);
+	}
+	
+	@Test
+	public void testMultipleNegativeDeposit() {
+		BankAccount account = new BankAccount();
+    	try {
+        	account.depositMultiplePeriods(-5, 3);
+        	fail();
+    	} catch (IllegalArgumentException e){
+        	assertTrue(e != null);
+    	}
+	}
+	
+	@Test
+	public void testMultipleWithdraw() {
+		BankAccount account = new BankAccount();
+		account.deposit(25);
+		account.withdrawMultiplePeriods(5, 3);
+		assertEquals(account.getCurrentBalance(), 10.0, 0.005);
+	}
+
+	@Test
+	public void testMultipleNegativeWithdraw() {
+		BankAccount account = new BankAccount();
+    		try {
+        		account.withdrawMultiplePeriods(-5, 3);
+        		fail();
+    		} catch (IllegalArgumentException e){
+        		assertTrue(e != null);
+    		}
+	}
+	
+
+	@Test
+	public void testMultipleIllegalWithdraw() {
+		BankAccount account = new BankAccount();
+		account.deposit(10);
+    		try {
+        		account.withdrawMultiplePeriods(5, 3);
+        		fail();
+    		} catch (IllegalArgumentException e){
+        		assertTrue(e != null);
+    		}
+	}
 
 	@Test
     public void testBalanceHistoryTracking() {
