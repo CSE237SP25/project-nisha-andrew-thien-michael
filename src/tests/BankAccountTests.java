@@ -3,6 +3,7 @@ package tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import java.util.List;
 import bankapp.Transaction;
@@ -318,5 +319,17 @@ public class BankAccountTests {
 	    catch(IllegalArgumentException e){
 	    assertEquals("Account type must be 'Checking' or 'Savings'.", e.getMessage());
 	}
+}
+	
+	@Test
+	void testAccountNumberIsGeneratedCorrectly() {
+	    BankAccount acc1 = new BankAccount("Checking");
+	    BankAccount acc2 = new BankAccount("Savings");
+
+	    assertNotNull(acc1.getAccountNumber());
+	    assertTrue(acc1.getAccountNumber().startsWith("CHK-"));
+
+	    assertNotNull(acc2.getAccountNumber());
+	    assertTrue(acc2.getAccountNumber().startsWith("SVG-"));
 	}
 }
