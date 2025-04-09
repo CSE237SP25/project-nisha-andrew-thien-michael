@@ -199,4 +199,28 @@ public class BankAccountTests {
 
 	    assertEquals(430.0, account.getCurrentBalance(), 0.001);
 	}
+	
+	@Test
+	public void testResetMonthlySpent() {
+	    BankAccount account = new BankAccount("Checking");
+	    account.deposit(500);
+	    account.setMonthlyLimit(100);
+
+	    account.withdraw(60); 
+	    assertEquals(60.0, account.getCurrentSpent(), 0.001);
+
+	    account.resetMonthlySpent();
+	    assertEquals(0.0, account.getCurrentSpent(), 0.001);
+	}
+	
+	@Test
+	public void testSetAndUpdateMonthlyLimit() {
+	    BankAccount account = new BankAccount("Checking");
+	    account.setMonthlyLimit(200.0);
+	    assertEquals(200.0, account.getMonthlyLimit(), 0.001);
+
+	    account.setMonthlyLimit(300.0); // update to a new value
+	    assertEquals(300.0, account.getMonthlyLimit(), 0.001);
+	}
+
 }
