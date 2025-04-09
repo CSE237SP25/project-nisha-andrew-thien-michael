@@ -43,7 +43,9 @@ public class Menu {
         System.out.println("3. Withdraw");
         System.out.println("4. View Balance History");
         System.out.println("5. Set Monthly Spending Limit");
-        System.out.println("6. Exit");
+        System.out.println("6. View Monthly Spending");
+        System.out.println("7. Reset Monthly Spending Limit");
+        System.out.println("8. Exit");
         System.out.print("Choose an option: ");
     }
 
@@ -74,7 +76,13 @@ public class Menu {
             case 5:
                 setMonthlyLimit(account);
                 break;
-            case 6:
+            case 6: 
+            	viewMonthlySpendingLimit(account); 
+            	break;
+            case 7: 
+            	resetMonthlySpending(account); 
+            	break;
+            case 8:
                 System.out.println("Goodbye!");
                 return false;
             default:
@@ -146,5 +154,17 @@ public class Menu {
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
         }
+    }
+    
+    private static void viewMonthlySpendingLimit(BankAccount account) {
+        System.out.println("Monthly Limit: $" + account.getMonthlyLimit());
+        System.out.println("Current Spent: $" + account.getCurrentSpent());
+        double remaining = account.getMonthlyLimit() - account.getCurrentSpent();
+        System.out.println("Remaining Balance: $" + remaining);
+    }
+    
+    private static void resetMonthlySpending(BankAccount account) {
+        account.resetMonthlySpent();
+        System.out.println("Monthly spending has been reset to $0.");
     }
 }
