@@ -180,4 +180,23 @@ public class BankAccountTests {
 	        assertEquals("Account type must be 'Checking' or 'Savings'.", e.getMessage());
 	    }
 	}
+	
+	@Test
+	public void testMonthlySpendingLimit() {
+	    BankAccount account = new BankAccount("Checking");
+	    account.deposit(500);
+	    account.setMonthlyLimit(100);
+
+	    account.withdraw(70); // this should work
+	    assertEquals(30.0, account.getMonthlyLimit() - account.getCurrentSpent(), 0.001);
+
+	    try {
+	        account.withdraw(40); // this should fail
+	        fail("Expected IllegalArgumentException not thrown.");
+	    } catch (IllegalArgumentException e) {
+	        assertEquals("You are exceeding the monthly spending limit!", e.getMessage());
+	    }
+
+	    assertEquals(430.0, account.getCurrentBalance(), 0.001);
+	}
 }

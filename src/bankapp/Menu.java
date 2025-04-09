@@ -42,7 +42,8 @@ public class Menu {
         System.out.println("2. Deposit");
         System.out.println("3. Withdraw");
         System.out.println("4. View Balance History");
-        System.out.println("5. Exit");
+        System.out.println("5. Set Monthly Spending Limit");
+        System.out.println("6. Exit");
         System.out.print("Choose an option: ");
     }
 
@@ -71,6 +72,9 @@ public class Menu {
                 getUserHistory(account);
                 break;
             case 5:
+                setMonthlyLimit(account);
+                break;
+            case 6:
                 System.out.println("Goodbye!");
                 return false;
             default:
@@ -122,6 +126,25 @@ public class Menu {
         System.out.println("Balance History:");
         for (int i = 0; i < history.size(); i++) {
             System.out.println("Step " + i + ": $" + history.get(i));
+        }
+    }
+    
+    private static void setMonthlyLimit(BankAccount account) {
+        System.out.print("Enter monthly spending limit: ");
+        if (!scanner.hasNextDouble()) {
+            System.out.println("Invalid input. Please enter a valid number.");
+            scanner.next();
+            return;
+        }
+
+        double limit = scanner.nextDouble();
+        scanner.nextLine();
+
+        try {
+            account.setMonthlyLimit(limit);
+            System.out.println("Monthly spending limit set to: $" + limit);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 }
