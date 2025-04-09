@@ -15,7 +15,7 @@ public class BankAccountTests {
 	@Test
 	public void testSimpleDeposit() {
 		//1. Create objects to be tested
-		BankAccount account = new BankAccount();
+		BankAccount account = new BankAccount("Checking");
 		
 		//2. Call the method being tested
 		account.deposit(25);
@@ -27,7 +27,7 @@ public class BankAccountTests {
 	@Test
 	public void testNegativeDeposit() {
 		//1. Create object to be tested
-		BankAccount account = new BankAccount();
+		BankAccount account = new BankAccount("Checking");
 
 		try {
 			account.deposit(-25);
@@ -39,7 +39,7 @@ public class BankAccountTests {
 
 	@Test
 	public void testSimpleWithdraw() {
-		BankAccount account = new BankAccount();
+		BankAccount account = new BankAccount("Checking");
 		account.deposit(25);
 		account.withdraw(10);
 		assertEquals(account.getCurrentBalance(), 15.0, 0.005);
@@ -47,7 +47,7 @@ public class BankAccountTests {
 	
 	@Test
 	public void testNegativeWithdraw() {
-	    	BankAccount account = new BankAccount();
+	    	BankAccount account = new BankAccount("Checking");
 	  	account.deposit(25);
 	    	try {
 	        	account.withdraw(-25);
@@ -59,7 +59,7 @@ public class BankAccountTests {
 	
 	@Test
 	public void testIllegalWithdraw() {
-	    	BankAccount account = new BankAccount();
+	    	BankAccount account = new BankAccount("Checking");
 	    	account.deposit(25);
 	    	try {
 	        	account.withdraw(50);
@@ -71,7 +71,7 @@ public class BankAccountTests {
 
 	@Test
     public void testBalanceHistoryTracking() {
-        BankAccount account = new BankAccount();
+        BankAccount account = new BankAccount("Checking");
         account.deposit(50);      // 0 -> 50
         account.withdraw(20);     // 50 -> 30
         account.deposit(10);      // 30 -> 40
@@ -85,20 +85,20 @@ public class BankAccountTests {
         assertEquals(40.0, history.get(3), 0.001);
     }
 	public void testNotFrozenStart() {
-	    BankAccount account = new BankAccount();
+	    BankAccount account = new BankAccount("Checking");
 	    assertFalse(account.getFrozenStatus());
 	}
 	
 	@Test
 	public void testFreeze(){
-	    BankAccount account = new BankAccount();
+	    BankAccount account = new BankAccount("Checking");
 	    account.freeze();
 	    assertTrue(account.getFrozenStatus());
 	}
 
 	@Test
 	public void testUnfreeze(){
-	    BankAccount account = new BankAccount();
+	    BankAccount account = new BankAccount("Checking");
 	    account.freeze();
 	    assertTrue(account.getFrozenStatus());
 	    account.unfreeze();
@@ -107,7 +107,7 @@ public class BankAccountTests {
 	
 	@Test
 	public void testFrozenDeposit() {
-		BankAccount account = new BankAccount();
+		BankAccount account = new BankAccount("Checking");
 		account.deposit(25);
 		account.freeze();
 		account.deposit(20);
@@ -116,7 +116,7 @@ public class BankAccountTests {
 
 	@Test
 	public void testFrozenWithdraw() {
-		BankAccount account = new BankAccount();
+		BankAccount account = new BankAccount("Checking");
 		account.deposit(25);
 		account.freeze();
 		account.withdraw(20);
@@ -125,28 +125,28 @@ public class BankAccountTests {
 	
 	@Test
 	public void testSetUsername() {
-		BankAccount account = new BankAccount();
+		BankAccount account = new BankAccount("Checking");
 		account.setUsername("andrew");
 		assertEquals(account.getUsername(), "andrew");
 	}
 	
 	@Test
 	public void testSetPassword() {
-		BankAccount account = new BankAccount();
+		BankAccount account = new BankAccount("Checking");
 		account.setPassword("hello");
 		assertEquals(account.getPassword(), "hello");
 	}
 	
 	@Test
 	public void testCorrectPasswordValidation() {
-		BankAccount account = new BankAccount();
+		BankAccount account = new BankAccount("Checking");
 		account.setPassword("hello");
 		assertTrue(account.validatePassword("hello"));
 	}
 	
 	@Test
 	public void testIncorrectPasswordValidation() {
-		BankAccount account = new BankAccount();
+		BankAccount account = new BankAccount("Checking");
 		account.setPassword("hello");
 		assertFalse(account.validatePassword("hi"));
 	}
@@ -154,8 +154,29 @@ public class BankAccountTests {
 
 	@Test
 	public void testNullPasswordValidation() {
-		BankAccount account = new BankAccount();
+		BankAccount account = new BankAccount("Checking");
 		account.setPassword(null);
 		assertFalse(account.validatePassword(null));
+	}
+	
+	@Test
+	public void testAccountTypeAndNumber() {
+	    BankAccount checkingAccount = new BankAccount("Checking");
+	    assertEquals("Checking", checkingAccount.getAccountType());
+	    assertTrue(checkingAccount.getAccountNumber().startsWith("CHK-"));
+
+	    BankAccount savingsAccount = new BankAccount("Savings");
+	    assertEquals("Savings", savingsAccount.getAccountType());
+	    assertTrue(savingsAccount.getAccountNumber().startsWith("SVG-"));
+	}
+
+	@Test
+	public void testInvalidAccountTypeThrowsException() {
+	    try {
+	        new BankAccount("Business");
+	        fail("Should throw exception for invalid account type");
+	    } catch (IllegalArgumentException e) {
+	        assertEquals("Account type must be 'Checking' or 'Savings'.", e.getMessage());
+	    }
 	}
 }

@@ -2,6 +2,7 @@ package bankapp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class BankAccount {
 
@@ -12,7 +13,16 @@ public class BankAccount {
 	private String username;
 	private String password;
 	
-	public BankAccount() {
+    private String accountType;
+    private String accountNumber;
+	
+	public BankAccount(String accountType) {
+        if (!"Checking".equalsIgnoreCase(accountType) && !"Savings".equalsIgnoreCase(accountType)) {
+            throw new IllegalArgumentException("Account type must be 'Checking' or 'Savings'.");
+        }
+        
+        this.accountType = accountType;
+        this.accountNumber = generateAccountNumber(accountType);
 		this.username = "";
 		this.password = "";
 		this.balanceHistory = new ArrayList<>();
@@ -81,4 +91,18 @@ public class BankAccount {
 	public boolean getFrozenStatus() {
 		return this.isFrozen;
 	}
+	
+    private String generateAccountNumber(String type) {
+        String prefix = type.equalsIgnoreCase("Checking") ? "CHK" : "SVG";
+        return prefix + "-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+    }
+    
+    public String getAccountType() {
+        return accountType;
+    }
+    
+    public String getAccountNumber() {
+        return accountNumber;
+    }
 }
+

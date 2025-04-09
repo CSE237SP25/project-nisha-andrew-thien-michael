@@ -7,7 +7,22 @@ public class Menu {
     private static final Scanner scanner = new Scanner(System.in);
     
     public static void main(String[] args) {
-        BankAccount account = new BankAccount();
+        System.out.println("=== Welcome ===");
+        System.out.print("Enter account type (Checking or Savings): ");
+        String accountType = scanner.nextLine().trim();
+        
+        BankAccount account;
+        try {
+            account = new BankAccount(accountType);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+            return;
+        }
+        
+        System.out.println("Account created!");
+        System.out.println("Account Type: " + account.getAccountType());
+        System.out.println("Account Number: " + account.getAccountNumber());
+
         showMainMenu(account);
     }
 
