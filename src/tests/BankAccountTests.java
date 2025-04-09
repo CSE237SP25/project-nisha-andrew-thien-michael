@@ -159,17 +159,6 @@ public class BankAccountTests {
 		account.setPassword(null);
 		assertFalse(account.validatePassword(null));
 	}
-	
-	@Test
-	public void testAccountTypeAndNumber() {
-	    BankAccount checkingAccount = new BankAccount("Checking");
-	    assertEquals("Checking", checkingAccount.getAccountType());
-	    assertTrue(checkingAccount.getAccountNumber().startsWith("CHK-"));
-
-	    BankAccount savingsAccount = new BankAccount("Savings");
-	    assertEquals("Savings", savingsAccount.getAccountType());
-	    assertTrue(savingsAccount.getAccountNumber().startsWith("SVG-"));
-	}
 
 	@Test
 	public void testInvalidAccountTypeThrowsException() {

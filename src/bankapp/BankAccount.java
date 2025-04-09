@@ -12,9 +12,7 @@ public class BankAccount {
 	
 	private String username;
 	private String password;
-	
-    private String accountType;
-    private String accountNumber;
+
     
     private double monthlyLimit = Double.MAX_VALUE;
     private double currentSpent = 0.0;
@@ -23,9 +21,7 @@ public class BankAccount {
         if (!"Checking".equalsIgnoreCase(accountType) && !"Savings".equalsIgnoreCase(accountType)) {
             throw new IllegalArgumentException("Account type must be 'Checking' or 'Savings'.");
         }
-        
-        this.accountType = accountType;
-        this.accountNumber = generateAccountNumber(accountType);
+
 		this.username = "";
 		this.password = "";
 		this.balanceHistory = new ArrayList<>();
@@ -102,19 +98,6 @@ public class BankAccount {
 	public boolean getFrozenStatus() {
 		return this.isFrozen;
 	}
-	
-    private String generateAccountNumber(String type) {
-        String prefix = type.equalsIgnoreCase("Checking") ? "CHK" : "SVG";
-        return prefix + "-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
-    }
-    
-    public String getAccountType() {
-        return accountType;
-    }
-    
-    public String getAccountNumber() {
-        return accountNumber;
-    }
     
     public void setMonthlyLimit(double limit) {
         if (limit < 0) {

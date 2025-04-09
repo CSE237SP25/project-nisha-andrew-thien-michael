@@ -20,8 +20,6 @@ public class Menu {
         }
         
         System.out.println("Account created!");
-        System.out.println("Account Type: " + account.getAccountType());
-        System.out.println("Account Number: " + account.getAccountNumber());
 
         showMainMenu(account);
     }
