@@ -3,7 +3,7 @@ package bankapp;
 import java.util.ArrayList;
 import java.util.List;
 import bankapp.Transaction;
-
+import java.util.UUID;
 
 public class BankAccount {
 
@@ -14,10 +14,20 @@ public class BankAccount {
 	private String username;
 	private String password;
 	private String accountName;
-
-
 	
-	public BankAccount() {
+    private String accountType;
+    private String accountNumber;
+
+    private double monthlyLimit = Double.MAX_VALUE;
+    private double currentSpent = 0.0;
+
+	public BankAccount(String accountType) {
+        if (!"Checking".equalsIgnoreCase(accountType) && !"Savings".equalsIgnoreCase(accountType)) {
+            throw new IllegalArgumentException("Account type must be 'Checking' or 'Savings'.");
+        }
+        
+        this.accountType = accountType;
+        this.accountNumber = generateAccountNumber(accountType);
 		this.username = "";
 		this.password = "";
 		this.balanceHistory = new ArrayList<>();
@@ -29,29 +39,39 @@ public class BankAccount {
 	}
 	
 	public void deposit(double amount) {
-		if(!this.isFrozen) {
-			if(amount < 0) {
-				throw new IllegalArgumentException();
-			}
-			this.balance += amount;
-			balanceHistory.add(this.balance);
-			this.transactions.add(new Transaction("deposit", amount));
-            System.out.println("Deposited: " + amount);
+		if(this.isFrozen) return;
+
+		if (amount <= 0) {
+			throw new IllegalArgumentException("");
 		}
+        
+        this.balance += amount;
+        this.balanceHistory.add(this.balance);
+        this.transactions.add(new Transaction("deposit", amount));
+        System.out.println("Deposited: " + amount);
 	}
 
 	public void withdraw(double amount){
-		if(!this.isFrozen) {
-			if(amount < 0 || amount > this.balance){
-		        throw new IllegalArgumentException();
-		    }
+		if(this.isFrozen) return;
+		
+		if (amount <= 0) {
+			throw new IllegalArgumentException("Withdraw amount must be positive.");
+		}
+		if (amount > this.balance) {
+			throw new IllegalArgumentException("Insufficient funds. Amount is greater than balance.");
+		}
+		
+        if ((this.currentSpent + amount) > this.monthlyLimit) {
+            throw new IllegalArgumentException("You are exceeding the monthly spending limit!");
+        }
+        
 		    this.balance -= amount;
+		    this.currentSpent += amount;
 		    balanceHistory.add(this.balance);
 		    this.transactions.add(new Transaction("withdraw", amount));
             System.out.println("Withdrawn: " + amount);
 		}
-	}
-
+	
 	public void depositMultiplePeriods(double amount, int periods) {
 		if (amount < 0 || periods <= 0) {
 	        	throw new IllegalArgumentException();
@@ -125,5 +145,37 @@ public class BankAccount {
 	public List<Transaction> getTransactions() {
 	    return new ArrayList<>(transactions);
 	}
+	
 
+    private String generateAccountNumber(String type) {
+        String prefix = type.equalsIgnoreCase("Checking") ? "CHK" : "SVG";
+        return prefix + "-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+    }
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setMonthlyLimit(double limit) {
+        if (limit < 0) {
+            throw new IllegalArgumentException("Limit can't be negative.");
+        }
+        this.monthlyLimit = limit;
+    }
+
+    public double getMonthlyLimit() {
+        return this.monthlyLimit;
+    }
+
+    public double getCurrentSpent() {
+        return this.currentSpent;
+    }
+
+    public void resetMonthlySpent() {
+        this.currentSpent = 0.0;
+    }
 }

@@ -64,7 +64,7 @@ public class MenuLoginTest {
             setMenuScanner(testMenuInstance, testIn);
             Method method = Menu.class.getDeclaredMethod(methodName, parameterTypes);
             method.setAccessible(true);
-            Object result = method.invoke(testMenuInstance);
+            method.invoke(testMenuInstance);
         } catch (Exception e) {
             e.printStackTrace();
             return "TEST FAILED: EXCEPTION THROWN - " + e.getMessage();
@@ -74,7 +74,7 @@ public class MenuLoginTest {
 
     @Test
     void testCreateAccount_Success() throws Exception {
-        String input = "testUser\npassword123\n";
+        String input = "Checking\ntestUser\npassword123\n";
         String output = runInstanceMenuMethodWithInput(input, "createAccount");
 
         assertTrue(output.contains("Account created successfully!"));
@@ -87,19 +87,19 @@ public class MenuLoginTest {
 
     @Test
     void testCreateAccount_DuplicateUsername() throws Exception {
-        String input1 = "testUser\npassword123\n";
+        String input1 = "Checking\ntestUser\npassword123\n";
         runInstanceMenuMethodWithInput(input1, "createAccount");
 
-        String input2 = "testUser\notherpass\n";
+        String input2 = "Checking\ntestUser\notherpass\n";
         String output2 = runInstanceMenuMethodWithInput(input2, "createAccount");
 
         assertTrue(output2.contains("Username already exists."));
         assertEquals(1, getAccountsMap(testMenuInstance).size());
     }
 
-     @Test
+    @Test
     void testCreateAccount_EmptyUsername() throws Exception {
-        String input = "\n";
+        String input = "Checking\n\npassword123\n";
         String output = runInstanceMenuMethodWithInput(input, "createAccount");
 
         assertTrue(output.contains("Username cannot be empty."));
@@ -107,9 +107,9 @@ public class MenuLoginTest {
         assertTrue(getAccountsMap(testMenuInstance).isEmpty());
     }
 
-     @Test
+    @Test
     void testCreateAccount_EmptyPassword() throws Exception {
-        String input = "testUser\n\n";
+        String input = "Checking\ntestUser\n\n";
         String output = runInstanceMenuMethodWithInput(input, "createAccount");
 
         assertTrue(output.contains("Password cannot be empty."));
@@ -117,22 +117,22 @@ public class MenuLoginTest {
         assertTrue(getAccountsMap(testMenuInstance).isEmpty());
     }
 
-     @Test
-     void testLogin_Success() throws Exception {
-         String createInput = "loginUser\nloginPass\n";
-         runInstanceMenuMethodWithInput(createInput, "createAccount");
+    @Test
+    void testLogin_Success() throws Exception {
+        String createInput = "Checking\nloginUser\nloginPass\n";
+        runInstanceMenuMethodWithInput(createInput, "createAccount");
 
-         String loginInput = "1\nloginUser\nloginPass\n";
-         String loginOutput = runInstanceMenuMethodWithInput(loginInput, "login");
+        String loginInput = "1\nloginUser\nloginPass\n";
+        String loginOutput = runInstanceMenuMethodWithInput(loginInput, "login");
 
-         assertTrue(loginOutput.contains("Login successful! Welcome loginUser"));
-         assertNotNull(getLoggedInAccount(testMenuInstance));
-         assertEquals("loginUser", getLoggedInAccount(testMenuInstance).getUsername());
-     }
+        assertTrue(loginOutput.contains("Login successful! Welcome loginUser"));
+        assertNotNull(getLoggedInAccount(testMenuInstance));
+        assertEquals("loginUser", getLoggedInAccount(testMenuInstance).getUsername());
+    }
 
     @Test
     void testLogin_WrongPassword() throws Exception {
-        String createInput = "loginUser\nloginPass\n";
+        String createInput = "Checking\nloginUser\nloginPass\n";
         runInstanceMenuMethodWithInput(createInput, "createAccount");
 
         String loginInput = "1\nloginUser\nwrongPass\n3\n";
@@ -155,7 +155,7 @@ public class MenuLoginTest {
 
     @Test
     void testForgotPassword_Success() throws Exception {
-        String createInput = "resetUser\noldPass\n";
+        String createInput = "Checking\nresetUser\noldPass\n";
         runInstanceMenuMethodWithInput(createInput, "createAccount");
 
         String forgotInput = "2\nresetUser\nnewPass\nnewPass\n3\n";
@@ -172,7 +172,7 @@ public class MenuLoginTest {
 
     @Test
     void testForgotPassword_PasswordMismatch() throws Exception {
-        String createInput = "resetUser\noldPass\n";
+        String createInput = "Checking\nresetUser\noldPass\n";
         runInstanceMenuMethodWithInput(createInput, "createAccount");
 
         String forgotInput = "2\nresetUser\nnewPass1\nnewPass2\n3\n";
@@ -186,9 +186,9 @@ public class MenuLoginTest {
         assertNull(getLoggedInAccount(testMenuInstance));
     }
 
-     @Test
+    @Test
     void testForgotPassword_EmptyNewPassword() throws Exception {
-        String createInput = "resetUser\noldPass\n";
+        String createInput = "Checking\nresetUser\noldPass\n";
         runInstanceMenuMethodWithInput(createInput, "createAccount");
 
         String forgotInput = "2\nresetUser\n\n\n3\n";

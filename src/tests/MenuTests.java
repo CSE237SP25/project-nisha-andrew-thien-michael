@@ -61,9 +61,9 @@ public class MenuTests {
 
     @Test
     public void testBalanceHistoryOptionDisplaysCorrectly() {
-        String simulatedInput = "4" + System.lineSeparator() + "5" + System.lineSeparator();
+        String simulatedInput = "4" + System.lineSeparator() + "1" + System.lineSeparator();
 
-        BankAccount account = new BankAccount();
+        BankAccount account = new BankAccount("Checking");
         account.setUsername("testUser");
 
         try {
@@ -97,9 +97,9 @@ public class MenuTests {
     
     @Test
     public void testTransactionCountOptionDisplaysZero() {
-    	String simulatedInput = "8" + System.lineSeparator() + "5" + System.lineSeparator();
+    	String simulatedInput = "9" + System.lineSeparator() + "1" + System.lineSeparator();
     	
-    	BankAccount account = new BankAccount();
+    	BankAccount account = new BankAccount("Checking");
     	account.setUsername("zeroTxUser");
     	
     	assertEquals(0, account.getTransactions().size(), "Pre-condition failed: Should be 0 transactions.");

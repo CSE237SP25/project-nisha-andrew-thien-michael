@@ -10,51 +10,46 @@ public class Menu {
     private final Scanner scanner;
     private final HashMap<String, BankAccount> accounts;
     private BankAccount loggedInAccount;
-    
+
     public Menu() {
-    	this.scanner = new Scanner(System.in);
-    	this.accounts = new HashMap<>();
-    	this.loggedInAccount = null;
+        this.scanner = new Scanner(System.in);
+        this.accounts = new HashMap<>();
+        this.loggedInAccount = null;
     }
-    
+
     public static void main(String[] args) {
-        System.out.println("Welcome to the Banking App!");
         Menu bankMenu = new Menu();
         bankMenu.runApplication();
-        System.out.println("Thank you for using the app! Exiting.");
         bankMenu.closeScanner();
     }
-    
+
     public void closeScanner() {
-    	this.scanner.close();
+        this.scanner.close();
     }
-    
+
     private void runApplication() {
-    	boolean appRunning = true;
-    	while(appRunning) {
-    		if(this.loggedInAccount == null) {
-    			showAuthMenu();
-    			int authChoice = getUserAuthOption();
-    			appRunning = handleAuthChoice(authChoice);
-        			}
-    		else {
-    			showMainMenu();
-    			this.loggedInAccount = null;
-    			System.out.println("Logging out...");
-        		}
-        	}
+        boolean appRunning = true;
+        while (appRunning) {
+            if (this.loggedInAccount == null) {
+                showAuthMenu();
+                int authChoice = getUserAuthOption();
+                appRunning = handleAuthChoice(authChoice);
+            } else {
+                showMainMenu();
+                this.loggedInAccount = null;
+                System.out.println("Logging out...");
+            }
         }
-    
-    private void showAuthMenu() {
-    	System.out.println("\n--- Authentication Menu ---");
-    	System.out.println("1. Create Account");
-    	System.out.println("2. Login");
-    	System.out.println("3. Exit");
-    	System.out.print("Choose an option: ");
     }
-    
+
+    private void showAuthMenu() {
+        System.out.println("\n--- Authentication Menu ---");
+        System.out.println("1. Create Account");
+        System.out.println("2. Login");
+        System.out.println("3. Exit");
+    }
+
     private int getUserAuthOption() {
-        System.out.print("Choose an option: ");
         int choice = -1;
         try {
             choice = this.scanner.nextInt();
@@ -62,7 +57,7 @@ public class Menu {
             System.out.println("Invalid input. Please enter a whole number.");
         } catch (NoSuchElementException e) {
             System.out.println("Input stream closed unexpectedly.");
-            choice = 3; 
+            choice = 3;
         } finally {
             if (this.scanner.hasNextLine()) {
                 this.scanner.nextLine();
@@ -75,6 +70,7 @@ public class Menu {
         switch (choice) {
             case 1:
                 createAccount();
+                return true;
             case 2:
                 login();
                 return true;
@@ -84,123 +80,129 @@ public class Menu {
                 if (choice != -1) {
                     System.out.println("Invalid authentication option.");
                 }
-                return true; 
+                return true;
         }
     }
-    
+
     private void createAccount() {
-    	System.out.print("Enter username: ");
-    	String username = this.scanner.nextLine().trim();
-    	if(username.isEmpty() || this.accounts.containsKey(username)) {
-    		System.out.println(username.isEmpty() ? "Username cannot be empty." : "Username already exists.");
-    		return;
-    	}
-    	System.out.print("Enter password: ");
-    	String password = this.scanner.nextLine();
-    	if(password.isEmpty()){
-    		System.out.println("Password cannot be empty.");
-    		return;
-    	}
-    	BankAccount newAccount = new BankAccount();
-    	newAccount.setUsername(username);
-    	newAccount.setPassword(password);
-    	this.accounts.put(username, newAccount);
-    	System.out.println("Account created successfully!");
+        System.out.print("Enter account type (Checking or Savings): ");
+        String accountType = this.scanner.nextLine().trim();
+
+        BankAccount account;
+        try {
+            account = new BankAccount(accountType);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+            return;
+        }
+
+        System.out.print("Enter username: ");
+        String username = this.scanner.nextLine().trim();
+        if (username.isEmpty() || this.accounts.containsKey(username)) {
+            System.out.println(username.isEmpty() ? "Username cannot be empty." : "Username already exists.");
+            return;
+        }
+
+        System.out.print("Enter password: ");
+        String password = this.scanner.nextLine();
+        if (password.isEmpty()) {
+            System.out.println("Password cannot be empty.");
+            return;
+        }
+
+        account.setUsername(username);
+        account.setPassword(password);
+        this.accounts.put(username, account);
+        System.out.println("Account created successfully!");
     }
-    
+
     private void login() {
-    	boolean loginMenuActive = true;
-    	while(loginMenuActive) {
-    		System.out.println("\n--- Login / Recovery ---");
-    		System.out.println("1. Login");
-    		System.out.println("2. Forgot Password");
-    		System.out.println("3. Back to Main Menu");
-    		System.out.print("Choose an option: ");
-    		
-    		int option = -1;
-    		try {
-    			option = this.scanner.nextInt();
-    		}
-    		catch (InputMismatchException e){
-    			System.out.println("Invalid input. Please enter a number.");
-    		}
-    		catch(NoSuchElementException e) {
-    			System.out.println("Input stream closed unexpectedly.");
-    			option = 3;
-    		}
-    		finally {
-    			if(this.scanner.hasNextLine()) {
-    				this.scanner.nextLine();
-    			}
-    		}
-    		
-    		switch(option) {
-    		case 1:
-    			if(performLogin()) {
-    				loginMenuActive = false;
-    			}
-    			break;
-    		case 2:
-    			forgotPassword();
-    			break;
-    		case 3:
-    			loginMenuActive = false;
-    			break;
-    		default:
-    			if(option != -1) {
-    				System.out.println("Invalid option.");
-    			}
-    		}
-    		
-    	}
+        boolean loginMenuActive = true;
+        while (loginMenuActive) {
+            System.out.println("\n--- Login / Recovery ---");
+            System.out.println("1. Login");
+            System.out.println("2. Forgot Password");
+            System.out.println("3. Back to Main Menu");
+            System.out.print("Choose an option: ");
+
+            int option = -1;
+            try {
+                option = this.scanner.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+            } catch (NoSuchElementException e) {
+                System.out.println("Input stream closed unexpectedly.");
+                option = 3;
+            } finally {
+                if (this.scanner.hasNextLine()) {
+                    this.scanner.nextLine();
+                }
+            }
+
+            switch (option) {
+                case 1:
+                    if (performLogin()) {
+                        loginMenuActive = false;
+                    }
+                    break;
+                case 2:
+                    forgotPassword();
+                    break;
+                case 3:
+                    loginMenuActive = false;
+                    break;
+                default:
+                    if (option != -1) {
+                        System.out.println("Invalid option.");
+                    }
+            }
+        }
     }
-    
+
     private boolean performLogin() {
-    	System.out.print("Username: ");
-    	String username = this.scanner.nextLine().trim();
-    	System.out.print("Password: ");
-    	String password = this.scanner.nextLine();
-    	
-    	BankAccount acc = this.accounts.get(username);
-    	if(acc != null && acc.validatePassword(password)) {
-    		this.loggedInAccount = acc;
-    		System.out.println("\nLogin successful! Welcome " + acc.getUsername());
-    		return true;
-    	}
-    	else {
-    		System.out.println("Invalid login credentials.");
-    		return false;
-    	}
+        System.out.print("Username: ");
+        String username = this.scanner.nextLine().trim();
+        System.out.print("Password: ");
+        String password = this.scanner.nextLine();
+
+        BankAccount acc = this.accounts.get(username);
+        if (acc != null && acc.validatePassword(password)) {
+            this.loggedInAccount = acc;
+            System.out.println("\nLogin successful! Welcome " + acc.getUsername());
+            return true;
+        } else {
+            System.out.println("Invalid login credentials.");
+            return false;
+        }
     }
-    
+
     private void forgotPassword() {
-    	System.out.print("Enter username: ");
-    	String username = this.scanner.nextLine();
-    	BankAccount acc = this.accounts.get(username);
-    	
-    	if(acc == null) {
-    		System.out.println("Username does not exist.");
-    		return;
-    	}
-    	
-    	System.out.print("Enter new Password: ");
-    	String newPassword = this.scanner.nextLine();
-    	if (newPassword.isEmpty()) {
-    		System.out.println("Password cannot be empty.");
-    		return;
-    	}
-    	
-    	System.out.print("Confirm new password: ");
-    	String confirmPassword = this.scanner.nextLine();
-    	if(!newPassword.equals(confirmPassword)) {
-    		System.out.println("Passwords do not match.");
-    		return;
-    	}
-    	
-    	acc.setPassword(newPassword);
-    	System.out.println("Password updated successfully!");
+        System.out.print("Enter username: ");
+        String username = this.scanner.nextLine();
+        BankAccount acc = this.accounts.get(username);
+
+        if (acc == null) {
+            System.out.println("Username does not exist.");
+            return;
+        }
+
+        System.out.print("Enter new Password: ");
+        String newPassword = this.scanner.nextLine();
+        if (newPassword.isEmpty()) {
+            System.out.println("Password cannot be empty.");
+            return;
+        }
+
+        System.out.print("Confirm new password: ");
+        String confirmPassword = this.scanner.nextLine();
+        if (!newPassword.equals(confirmPassword)) {
+            System.out.println("Passwords do not match.");
+            return;
+        }
+
+        acc.setPassword(newPassword);
+        System.out.println("Password updated successfully!");
     }
-    
 
     public void showMainMenu() {
         boolean running = true;
@@ -219,76 +221,71 @@ public class Menu {
         System.out.println("2. Deposit");
         System.out.println("3. Withdraw");
         System.out.println("4. View Balance History");
-        System.out.println("5. Exit");
-		System.out.println("6. Set Account Name");
-        System.out.println("7. View Transaction History");
-        System.out.println("8. View Transaction Count");
-        System.out.println("9. Deposit Multiple Periods");
+        System.out.println("5. Set Monthly Limit");
+        System.out.println("6. View Monthly Spending");
+        System.out.println("7. Reset Monthly Spending");
+        System.out.println("8. Set Account Name");
+        System.out.println("9. View Transaction History");
         System.out.println("10. Withdraw Multiple Periods");
-        System.out.print("Choose an option: ");
     }
 
     private int getUserMenuOption() {
-    	int choice = -1;
-    	while(choice < 1 || choice > 8) {
-    		System.out.print("Choose an option (1-10): ");
-    		try {
-    			choice = this.scanner.nextInt();
-    			if(choice < 1 || choice > 8) {
-    				System.out.println("Invalid choice. Please enter a number between 1 and 8.");
-    				choice = -1;
-    			}
-    		}
-    		catch (InputMismatchException e) {
-    			System.out.println("Invalid input. Please enter a nubmer.");
-    			choice = -1;
-    		}
-    		catch (NoSuchElementException e) {
-    			System.out.println("Input stream closed unexpectedly.");
-    			choice = 5;
-    		}
-    		finally {
-    			if(this.scanner.hasNextLine()) {
-    				this.scanner.nextLine();
-    			}
-    		}
-    	}
-    	return choice;
+        int choice = -1;
+        while (choice < 1 || choice > 10) {
+            System.out.print("Choose an option (1–10): ");
+            try {
+                choice = this.scanner.nextInt();
+                if (choice < 1 || choice > 10) {
+                    System.out.println("Invalid choice. Please enter a number between 1 and 10.");
+                    choice = -1;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                this.scanner.next(); // consume invalid input
+            } catch (NoSuchElementException e) {
+                System.out.println("Input stream closed unexpectedly.");
+                return 10; // force exit
+            } finally {
+                if (this.scanner.hasNextLine()) this.scanner.nextLine();
+            }
+        }
+        return choice;
     }
 
     private boolean processMenuChoice(int option) {
         switch (option) {
-            case 1:
-                printUserBalance();
-                break;
-            case 2:
-                userDeposit();
-                break;
-            case 3:
-                userWithdraw();
-                break;
-            case 4:
-                getUserHistory();
-                break;
-            case 5:
-                return false;
-			      case 6:
-                setAccountName();
-                break;
-            case 7:
-                showTransactionHistory();
-                break;
-            case 8:
-            	showTransactionCount();
+            case 1: 
+            	printUserBalance(); 
             	break;
-            case 9:
-                depositMultiplePeriods();
-                break;
-            case 10:
-                withdrawMultiplePeriods();
-                break;
+            case 2: 
+            	userDeposit(); 
+            	break;
+            case 3: 
+            	userWithdraw();
+            	break;
+            case 4: 
+            	getUserHistory(); 
+            	break;
+            case 5: 
+            	setMonthlyLimit();
+            	break;
+            case 6: 
+            	viewMonthlySpendingLimit(); 
+            	break;
+            case 7: 
+            	resetMonthlySpending(); 
+            	break;
+            case 8: 
+            	setAccountName(); 
+            	break;
+            case 9: 
+            	showTransactionHistory(); 
+            	break;
+            case 10: 
+            	withdrawMultiplePeriods(); 
+            	break;
         }
-        return true;
+        return option != 10;
     }
 
     private void printUserBalance() {
@@ -338,17 +335,16 @@ public class Menu {
     }
 
     private void setAccountName() {
-      System.out.print("Enter a name for your account: ");
-      String name = this.scanner.nextLine().trim();
-      if (name.isEmpty()) {
-        System.out.println("Account name cannot be empty.");
-      } else {
-        this.loggedInAccount.setAccountName(name);
-        System.out.println("Account name set to: " + this.loggedInAccount.getAccountName());
-      }
+        System.out.print("Enter a name for your account: ");
+        String name = this.scanner.nextLine().trim();
+        if (name.isEmpty()) {
+            System.out.println("Account name cannot be empty.");
+        } else {
+            this.loggedInAccount.setAccountName(name);
+            System.out.println("Account name set to: " + this.loggedInAccount.getAccountName());
+        }
     }
 
-    
     private void showTransactionHistory() {
         List<Transaction> transactions = this.loggedInAccount.getTransactions();
         if (transactions.isEmpty()) {
@@ -360,32 +356,33 @@ public class Menu {
             }
         }
     }
-    
-    private void showTransactionCount() {
-    	int count = this.loggedInAccount.getTransactions().size();
-    	System.out.println("\nTotal transactions performed: " + count);
+
+    private void viewMonthlySpendingLimit() {
+        System.out.println("Monthly Limit: $" + this.loggedInAccount.getMonthlyLimit());
+        System.out.println("Current Spent: $" + this.loggedInAccount.getCurrentSpent());
+        double remaining = this.loggedInAccount.getMonthlyLimit() - this.loggedInAccount.getCurrentSpent();
+        System.out.println("Remaining Balance: $" + remaining);
     }
 
-    private void depositMultiplePeriods() {
-        System.out.print("Enter amount to deposit per period: ");
+    private void resetMonthlySpending() {
+        this.loggedInAccount.resetMonthlySpent();
+        System.out.println("Monthly spending has been reset to $0.");
+    }
+
+    private void setMonthlyLimit() {
+        System.out.print("Enter monthly spending limit: ");
         if (!this.scanner.hasNextDouble()) {
-            System.out.println("Invalid amount. Please enter a valid number.");
+            System.out.println("Invalid input. Please enter a valid number.");
             this.scanner.next();
             return;
         }
-        double amount = this.scanner.nextDouble();
-        
-        System.out.print("Enter number of periods: ");
-        if (!this.scanner.hasNextInt()) {
-            System.out.println("Invalid number of periods. Please enter a valid integer.");
-            this.scanner.next();
-            return;
-        }
-        int periods = this.scanner.nextInt();
+
+        double limit = this.scanner.nextDouble();
         this.scanner.nextLine();
-        
+
         try {
-            this.loggedInAccount.depositMultiplePeriods(amount, periods);
+            this.loggedInAccount.setMonthlyLimit(limit);
+            System.out.println("Monthly spending limit set to: $" + limit);
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -399,7 +396,7 @@ public class Menu {
             return;
         }
         double amount = this.scanner.nextDouble();
-        
+
         System.out.print("Enter number of periods: ");
         if (!this.scanner.hasNextInt()) {
             System.out.println("Invalid number of periods. Please enter a valid integer.");
@@ -408,7 +405,7 @@ public class Menu {
         }
         int periods = this.scanner.nextInt();
         this.scanner.nextLine();
-        
+
         try {
             this.loggedInAccount.withdrawMultiplePeriods(amount, periods);
         } catch (IllegalArgumentException e) {
