@@ -231,7 +231,7 @@ public class Menu {
     private int getUserMenuOption() {
     	int choice = -1;
     	while(choice < 1 || choice > 8) {
-    		System.out.print("Choose an option (1-8): ");
+    		System.out.print("Choose an option (1-10): ");
     		try {
     			choice = this.scanner.nextInt();
     			if(choice < 1 || choice > 8) {
