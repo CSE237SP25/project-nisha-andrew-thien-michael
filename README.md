@@ -69,5 +69,4 @@ What commands are needed to compile and run your code from the command line (ple
     Run the Unit Tests to check if the functionalities of the logic in our bank app operate successfully.
 # Commands to run our code
 What commands are needed to compile and run your code from the command line (please provide a script that users can run to launch your program)?
-- javac bankapp/*.java
-- java bankapp.Menu
+- ./run.sh
