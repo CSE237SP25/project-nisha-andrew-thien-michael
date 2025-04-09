@@ -70,3 +70,5 @@ What commands are needed to compile and run your code from the command line (ple
 # Commands to run our code
 What commands are needed to compile and run your code from the command line (please provide a script that users can run to launch your program)?
 - ./run.sh
+
+- If running into issues running the script, use commands 'sudo apt update' and 'sudo apt install dos2unix' then run 'dos2unix run.sh' and the script should be able to run properly
