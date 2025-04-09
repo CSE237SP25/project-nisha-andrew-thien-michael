@@ -14,10 +14,14 @@ public class BankAccount {
 	private String username;
 	private String password;
 	private String accountName;
+	private String accountType;
 
-
-	
-	public BankAccount() {
+	public BankAccount(String accountType) {
+		if (!"Checking".equalsIgnoreCase(accountType) && !"Savings".equalsIgnoreCase(accountType)) {
+		    throw new IllegalArgumentException("Account type must be 'Checking' or 'Savings'.");
+		}
+		
+		this.accountType = accountType;
 		this.username = "";
 		this.password = "";
 		this.balanceHistory = new ArrayList<>();
@@ -125,5 +129,8 @@ public class BankAccount {
 	public List<Transaction> getTransactions() {
 	    return new ArrayList<>(transactions);
 	}
-
+	
+	public String getAccountType() {
+	    return accountType;
+	}
 }
