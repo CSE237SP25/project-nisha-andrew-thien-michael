@@ -27,7 +27,7 @@ public class MenuTests {
             System.setIn(testIn);
             System.setOut(new PrintStream(testOut));
 
-            BankAccount account = new BankAccount("Checking");
+            BankAccount account = new BankAccount();
             Menu.showMainMenu(account);
 
             String output = testOut.toString();
