@@ -15,6 +15,8 @@ public class BankAccount {
 	private String password;
 	private String accountName;
 	private String accountType;
+	private double monthlySpendingLimit = Double.MAX_VALUE;
+	private double currentSpent = 0.0;
 
 	public BankAccount(String accountType) {
 		if (!"Checking".equalsIgnoreCase(accountType) && !"Savings".equalsIgnoreCase(accountType)) {
@@ -49,7 +51,11 @@ public class BankAccount {
 			if(amount < 0 || amount > this.balance){
 		        throw new IllegalArgumentException();
 		    }
+	        if (this.currentSpent + amount > this.monthlySpendingLimit) {
+	            throw new IllegalArgumentException("Withdrawal would exceed the monthly spending limit.");
+	        }
 		    this.balance -= amount;
+	        this.currentSpent += amount;
 		    balanceHistory.add(this.balance);
 		    this.transactions.add(new Transaction("withdraw", amount));
             System.out.println("Withdrawn: " + amount);
@@ -132,5 +138,24 @@ public class BankAccount {
 	
 	public String getAccountType() {
 	    return accountType;
+	}
+	
+	public void setMonthlySpendingLimit(double limit) {
+	    if (limit < 0) {
+	        throw new IllegalArgumentException("Spending limit must be non-negative.");
+	    }
+	    this.monthlySpendingLimit = limit;
+	}
+
+	public double getMonthlySpendingLimit() {
+	    return this.monthlySpendingLimit;
+	}
+
+	public double getCurrentSpent() {
+	    return this.currentSpent;
+	}
+
+	public void resetMonthlySpending() {
+	    this.currentSpent = 0;
 	}
 }

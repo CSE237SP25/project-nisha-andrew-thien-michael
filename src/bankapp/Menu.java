@@ -233,22 +233,26 @@ public class Menu {
         System.out.println("8. View Transaction Count");
         System.out.println("9. Deposit Multiple Periods");
         System.out.println("10. Withdraw Multiple Periods");
+        System.out.println("11. Set Monthly Spending Limit");
+        System.out.println("12. View Monthly Spending Limit");
+        System.out.println("13. View Amount Spent This Month");
+        System.out.println("14. Reset Monthly Spending");
         System.out.print("Choose an option: ");
     }
 
     private int getUserMenuOption() {
     	int choice = -1;
-    	while(choice < 1 || choice > 8) {
-    		System.out.print("Choose an option (1-10): ");
+    	while(choice < 1 || choice > 14) {
+    		System.out.print("Choose an option (1-14): ");
     		try {
     			choice = this.scanner.nextInt();
-    			if(choice < 1 || choice > 8) {
+    			if(choice < 1 || choice > 14) {
     				System.out.println("Invalid choice. Please enter a number between 1 and 8.");
     				choice = -1;
     			}
     		}
     		catch (InputMismatchException e) {
-    			System.out.println("Invalid input. Please enter a nubmer.");
+    			System.out.println("Invalid input. Please enter a numb11er.");
     			choice = -1;
     		}
     		catch (NoSuchElementException e) {
@@ -294,6 +298,18 @@ public class Menu {
                 break;
             case 10:
                 withdrawMultiplePeriods();
+                break;
+            case 11:
+                setSpendingLimit();
+                break;
+            case 12:
+                viewSpendingLimit();
+                break;
+            case 13:
+                viewAmountSpentThisMonth();
+                break;
+            case 14:
+                resetSpending();
                 break;
         }
         return true;
@@ -422,5 +438,35 @@ public class Menu {
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
         }
+    }
+    
+    private void setSpendingLimit() {
+        System.out.print("Enter monthly spending limit: ");
+        if (!scanner.hasNextDouble()) {
+            System.out.println("Invalid input. Please enter a valid number.");
+            scanner.next();
+            return;
+        }
+        double limit = scanner.nextDouble();
+        scanner.nextLine();
+        try {
+            loggedInAccount.setMonthlySpendingLimit(limit);
+            System.out.println("Monthly spending limit set to $" + limit);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void viewSpendingLimit() {
+        System.out.println("Monthly Spending Limit: $" + loggedInAccount.getMonthlySpendingLimit());
+    }
+
+    private void viewAmountSpentThisMonth() {
+        System.out.println("Amount Spent This Month: $" + loggedInAccount.getCurrentSpent());
+    }
+
+    private void resetSpending() {
+        loggedInAccount.resetMonthlySpending();
+        System.out.println("Monthly spending reset.");
     }
 }
