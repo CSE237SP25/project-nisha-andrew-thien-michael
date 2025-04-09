@@ -5,7 +5,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import java.util.List;
-
+import bankapp.Transaction;
+import java.time.LocalDateTime;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import org.junit.jupiter.api.Test;
 
 import bankapp.BankAccount;
@@ -68,6 +71,111 @@ public class BankAccountTests {
 	        	assertTrue(e != null);
 	    	}
 	}
+	
+    @Test
+    public void testDepositReceiptOutput() {
+        BankAccount account = new BankAccount();
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+
+        account.deposit(100);
+        String output = outContent.toString().trim();
+
+        assertTrue(output.contains("Deposited: 100.0"));
+        System.setOut(System.out);
+    }
+
+    @Test
+    public void testWithdrawReceiptOutput() {
+        BankAccount account = new BankAccount();
+        account.deposit(200);
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+
+        account.withdraw(50);
+        String output = outContent.toString().trim();
+
+        assertTrue(output.contains("Withdrawn: 50.0"));
+        System.setOut(System.out);
+    }
+
+	@Test
+	public void testMultipleDeposit() {
+		BankAccount account = new BankAccount();
+		account.depositMultiplePeriods(5, 3);
+		assertEquals(account.getCurrentBalance(), 15.0, 0.005);
+	}
+	
+	@Test
+	public void testMultipleNegativeDeposit() {
+		BankAccount account = new BankAccount();
+    	try {
+        	account.depositMultiplePeriods(-5, 3);
+        	fail();
+    	} catch (IllegalArgumentException e){
+        	assertTrue(e != null);
+    	}
+	}
+	
+	@Test
+	public void testMultipleWithdraw() {
+		BankAccount account = new BankAccount();
+		account.deposit(25);
+		account.withdrawMultiplePeriods(5, 3);
+		assertEquals(account.getCurrentBalance(), 10.0, 0.005);
+	}
+
+	@Test
+	public void testMultipleNegativeWithdraw() {
+		BankAccount account = new BankAccount();
+    		try {
+        		account.withdrawMultiplePeriods(-5, 3);
+        		fail();
+    		} catch (IllegalArgumentException e){
+        		assertTrue(e != null);
+    		}
+	}
+	
+
+	@Test
+	public void testMultipleIllegalWithdraw() {
+		BankAccount account = new BankAccount();
+		account.deposit(10);
+    		try {
+        		account.withdrawMultiplePeriods(5, 3);
+        		fail();
+    		} catch (IllegalArgumentException e){
+        		assertTrue(e != null);
+    		}
+	}
+	
+
+    @Test
+    public void testMultipleDepositReceiptOutput() {
+        BankAccount account = new BankAccount();
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+
+        account.depositMultiplePeriods(50, 3);
+        String output = outContent.toString().trim();
+        
+        assertTrue(output.contains("Deposited: 50.0, Periods: 3"));
+        System.setOut(System.out);
+    }
+
+    @Test
+    public void testMultipleWithdrawReceiptOutput() {
+        BankAccount account = new BankAccount();
+        account.deposit(200);
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+
+        account.withdrawMultiplePeriods(50, 3);
+        String output = outContent.toString().trim();
+
+        assertTrue(output.contains("Withdrawn: 50.0, Periods: 3"));
+        System.setOut(System.out);
+    }
 
 	@Test
     public void testBalanceHistoryTracking() {
@@ -84,6 +192,8 @@ public class BankAccountTests {
         assertEquals(30.0, history.get(2), 0.001);
         assertEquals(40.0, history.get(3), 0.001);
     }
+	
+	@Test
 	public void testNotFrozenStart() {
 	    BankAccount account = new BankAccount();
 	    assertFalse(account.getFrozenStatus());

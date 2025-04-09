@@ -28,8 +28,9 @@ public class BankAccount {
 			}
 			this.balance += amount;
 			balanceHistory.add(this.balance);
+			this.transactions.add(new Transaction("deposit", amount));
+            System.out.println("Deposited: " + amount);
 		}
-		
 	}
 
 	public void withdraw(double amount){
@@ -39,6 +40,32 @@ public class BankAccount {
 		    }
 		    this.balance -= amount;
 		    balanceHistory.add(this.balance);
+		    this.transactions.add(new Transaction("withdraw", amount));
+            System.out.println("Withdrawn: " + amount);
+		}
+	}
+
+	public void depositMultiplePeriods(double amount, int periods) {
+		if (amount < 0 || periods <= 0) {
+	        	throw new IllegalArgumentException();
+	    	}
+	    
+	    	for (int i = 0; i < periods; i++) {
+	        	this.deposit(amount);
+	    	}
+	        System.out.println("Deposited: " + amount + ", Periods: " + periods);
+	}
+
+	public void withdrawMultiplePeriods(double amount, int periods) {
+	    	if (amount < 0 || periods <= 0 || amount * periods > this.balance) {
+	        	throw new IllegalArgumentException();
+	    	}
+	    
+	    	for (int i = 0; i < periods; i++) {
+	        	this.withdraw(amount);
+	    	}
+	        System.out.println("Withdrawn: " + amount + ", Periods: " + periods);
+	}
 		}
 	}
 	
