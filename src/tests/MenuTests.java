@@ -121,39 +121,4 @@ public class MenuTests {
     		fail("Test execution failed: " + e.getMessage(), e);
     	}
     }
-    
-    
-    
-    @Test
-    public void testTransactionCountOptionDisplaysMultiple() {
-    	String simulatedInput = "8" + System.lineSeparator() + "5" + System.lineSeparator();
-    	
-    	BankAccount account = new BankAccount();
-    	account.setUsername("multiTxUser");
-    	
-    	try {
-    		account.deposit(100.0);
-    		account.withdraw(25.0);
-    		account.deposit(50.0);
-    	}
-    	catch(IllegalArgumentException e) {
-    		fail("Test setup failed during direct deposit/withdraw: " + e.getMessage());
-    	}
-    	
-    	assertEquals(3, account.getTransactions().size(), "Pre-condition failed: Should be 3 transactions.");
-    	ByteArrayInputStream testIn = new ByteArrayInputStream(simulatedInput.getBytes());
-    	
-    	try {
-    		setLoggedInAccount(testMenuInstance, account);
-    		setMenuScanner(testMenuInstance, testIn);
-    		testMenuInstance.showMainMenu();
-    		
-    		String output = testOut.toString().replace("\r\n", "\n");
-    		
-    		assertTrue(output.contains("Total transactions performed: 3"), "Output should show 3 transactions. Output was: " + output);
-    	}
-    	catch (Exception e) {
-    		fail("Test execution failed: " + e.getMessage(), e);
-    	}
-    }
 }

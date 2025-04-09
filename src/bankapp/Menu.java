@@ -220,9 +220,11 @@ public class Menu {
         System.out.println("3. Withdraw");
         System.out.println("4. View Balance History");
         System.out.println("5. Exit");
-		    System.out.println("6. Set Account Name");
+		System.out.println("6. Set Account Name");
         System.out.println("7. View Transaction History");
         System.out.println("8. View Transaction Count");
+        System.out.println("9. Deposit Multiple Periods");
+        System.out.println("10. Withdraw Multiple Periods");
         System.out.print("Choose an option: ");
     }
 
@@ -279,6 +281,12 @@ public class Menu {
             case 8:
             	showTransactionCount();
             	break;
+            case 9:
+                depositMultiplePeriods();
+                break;
+            case 10:
+                withdrawMultiplePeriods();
+                break;
         }
         return true;
     }
@@ -358,4 +366,53 @@ public class Menu {
     	System.out.println("\nTotal transactions performed: " + count);
     }
 
+    private void depositMultiplePeriods() {
+        System.out.print("Enter amount to deposit per period: ");
+        if (!this.scanner.hasNextDouble()) {
+            System.out.println("Invalid amount. Please enter a valid number.");
+            this.scanner.next();
+            return;
+        }
+        double amount = this.scanner.nextDouble();
+        
+        System.out.print("Enter number of periods: ");
+        if (!this.scanner.hasNextInt()) {
+            System.out.println("Invalid number of periods. Please enter a valid integer.");
+            this.scanner.next();
+            return;
+        }
+        int periods = this.scanner.nextInt();
+        this.scanner.nextLine();
+        
+        try {
+            this.loggedInAccount.depositMultiplePeriods(amount, periods);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void withdrawMultiplePeriods() {
+        System.out.print("Enter amount to withdraw per period: ");
+        if (!this.scanner.hasNextDouble()) {
+            System.out.println("Invalid amount. Please enter a valid number.");
+            this.scanner.next();
+            return;
+        }
+        double amount = this.scanner.nextDouble();
+        
+        System.out.print("Enter number of periods: ");
+        if (!this.scanner.hasNextInt()) {
+            System.out.println("Invalid number of periods. Please enter a valid integer.");
+            this.scanner.next();
+            return;
+        }
+        int periods = this.scanner.nextInt();
+        this.scanner.nextLine();
+        
+        try {
+            this.loggedInAccount.withdrawMultiplePeriods(amount, periods);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
 }
