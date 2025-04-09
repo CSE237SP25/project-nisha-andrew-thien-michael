@@ -9,6 +9,8 @@ import bankapp.Transaction;
 import java.time.LocalDateTime;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+
+
 import org.junit.jupiter.api.Test;
 
 import bankapp.BankAccount;
@@ -268,4 +270,34 @@ public class BankAccountTests {
 		account.setPassword(null);
 		assertFalse(account.validatePassword(null));
 	}
+
+	@Test
+	public void testSetAndGetAccountName() {
+		BankAccount account = new BankAccount();
+		account.setAccountName("Vacation Fund");
+		assertEquals("Vacation Fund", account.getAccountName());
+	}
+
+	
+	@Test
+	public void testTransactionTracking() {
+	    BankAccount account = new BankAccount();
+
+	    account.deposit(150.00);
+	    account.withdraw(50.00);
+
+	    List<Transaction> transactions = account.getTransactions();
+
+	    assertEquals(2, transactions.size());
+
+	    Transaction first = transactions.get(0);
+	    Transaction second = transactions.get(1);
+
+	    assertTrue(first.toString().contains("deposit"));
+	    assertTrue(first.toString().contains("150.0"));
+
+	    assertTrue(second.toString().contains("withdraw"));
+	    assertTrue(second.toString().contains("50.0"));
+	}
+
 }
