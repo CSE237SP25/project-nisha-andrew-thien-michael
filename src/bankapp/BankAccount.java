@@ -2,7 +2,6 @@ package bankapp;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class BankAccount {
 
@@ -13,19 +12,7 @@ public class BankAccount {
 	private String username;
 	private String password;
 	
-    private String accountType;
-    private String accountNumber;
-    
-    private double monthlyLimit = Double.MAX_VALUE;
-    private double currentSpent = 0.0;
-	
-	public BankAccount(String accountType) {
-        if (!"Checking".equalsIgnoreCase(accountType) && !"Savings".equalsIgnoreCase(accountType)) {
-            throw new IllegalArgumentException("Account type must be 'Checking' or 'Savings'.");
-        }
-        
-        this.accountType = accountType;
-        this.accountNumber = generateAccountNumber(accountType);
+	public BankAccount() {
 		this.username = "";
 		this.password = "";
 		this.balanceHistory = new ArrayList<>();
@@ -46,22 +33,14 @@ public class BankAccount {
 	}
 
 	public void withdraw(double amount){
-		if(this.isFrozen) return;
-			
-		if (amount <= 0) {
-			throw new IllegalArgumentException("Withdraw amount must be positive.");
-		}
-		if (amount > this.balance) {
-			throw new IllegalArgumentException("Insufficient funds. Amount is greater than balance.");
-		}
-		
-        if ((this.currentSpent + amount) > this.monthlyLimit) {
-            throw new IllegalArgumentException("You are exceeding the monthly spending limit!");
-        }
+		if(!this.isFrozen) {
+			if(amount < 0 || amount > this.balance){
+		        throw new IllegalArgumentException();
+		    }
 		    this.balance -= amount;
-	        this.currentSpent += amount;
 		    balanceHistory.add(this.balance);
 		}
+	}
 	
 	public void freeze() {
 		this.isFrozen = true;
@@ -102,37 +81,4 @@ public class BankAccount {
 	public boolean getFrozenStatus() {
 		return this.isFrozen;
 	}
-	
-    private String generateAccountNumber(String type) {
-        String prefix = type.equalsIgnoreCase("Checking") ? "CHK" : "SVG";
-        return prefix + "-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
-    }
-    
-    public String getAccountType() {
-        return accountType;
-    }
-    
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-    
-    public void setMonthlyLimit(double limit) {
-        if (limit < 0) {
-            throw new IllegalArgumentException("Limit can't be negative.");
-        }
-        this.monthlyLimit = limit;
-    }
-    
-    public double getMonthlyLimit() {
-        return this.monthlyLimit;
-    }
-
-    public double getCurrentSpent() {
-        return this.currentSpent;
-    }
-
-    public void resetMonthlySpent() {
-        this.currentSpent = 0.0;
-    }
 }
-

@@ -7,22 +7,7 @@ public class Menu {
     private static final Scanner scanner = new Scanner(System.in);
     
     public static void main(String[] args) {
-        System.out.println("=== Welcome ===");
-        System.out.print("Enter account type (Checking or Savings): ");
-        String accountType = scanner.nextLine().trim();
-        
-        BankAccount account;
-        try {
-            account = new BankAccount(accountType);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error: " + e.getMessage());
-            return;
-        }
-        
-        System.out.println("Account created!");
-        System.out.println("Account Type: " + account.getAccountType());
-        System.out.println("Account Number: " + account.getAccountNumber());
-
+        BankAccount account = new BankAccount();
         showMainMenu(account);
     }
 
@@ -42,10 +27,7 @@ public class Menu {
         System.out.println("2. Deposit");
         System.out.println("3. Withdraw");
         System.out.println("4. View Balance History");
-        System.out.println("5. Set Monthly Spending Limit");
-        System.out.println("6. View Monthly Spending");
-        System.out.println("7. Reset Monthly Spending Limit");
-        System.out.println("8. Exit");
+        System.out.println("5. Exit");
         System.out.print("Choose an option: ");
     }
 
@@ -74,15 +56,6 @@ public class Menu {
                 getUserHistory(account);
                 break;
             case 5:
-                setMonthlyLimit(account);
-                break;
-            case 6: 
-            	viewMonthlySpendingLimit(account); 
-            	break;
-            case 7: 
-            	resetMonthlySpending(account); 
-            	break;
-            case 8:
                 System.out.println("Goodbye!");
                 return false;
             default:
@@ -135,36 +108,5 @@ public class Menu {
         for (int i = 0; i < history.size(); i++) {
             System.out.println("Step " + i + ": $" + history.get(i));
         }
-    }
-    
-    private static void setMonthlyLimit(BankAccount account) {
-        System.out.print("Enter monthly spending limit: ");
-        if (!scanner.hasNextDouble()) {
-            System.out.println("Invalid input. Please enter a valid number.");
-            scanner.next();
-            return;
-        }
-
-        double limit = scanner.nextDouble();
-        scanner.nextLine();
-
-        try {
-            account.setMonthlyLimit(limit);
-            System.out.println("Monthly spending limit set to: $" + limit);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
-    
-    private static void viewMonthlySpendingLimit(BankAccount account) {
-        System.out.println("Monthly Limit: $" + account.getMonthlyLimit());
-        System.out.println("Current Spent: $" + account.getCurrentSpent());
-        double remaining = account.getMonthlyLimit() - account.getCurrentSpent();
-        System.out.println("Remaining Balance: $" + remaining);
-    }
-    
-    private static void resetMonthlySpending(BankAccount account) {
-        account.resetMonthlySpent();
-        System.out.println("Monthly spending has been reset to $0.");
     }
 }
