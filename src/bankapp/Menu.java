@@ -101,7 +101,15 @@ public class Menu {
     		System.out.println("Password cannot be empty.");
     		return;
     	}
-    	BankAccount newAccount = new BankAccount();
+    	System.out.print("Enter account type (Checking or Savings): ");
+    	String accountType = this.scanner.nextLine().trim();
+    	BankAccount newAccount;
+    	try {
+    	    newAccount = new BankAccount(accountType);
+    	} catch (IllegalArgumentException e) {
+    	    System.out.println("Error: " + e.getMessage());
+    	    return;
+    	}
     	newAccount.setUsername(username);
     	newAccount.setPassword(password);
     	this.accounts.put(username, newAccount);
