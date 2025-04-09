@@ -116,7 +116,7 @@ public class MenuLoginTest {
         assertFalse(output.contains("Account created successfully!"));
         assertTrue(getAccountsMap(testMenuInstance).isEmpty());
     }
-
+  
      @Test
      void testLogin_Success() throws Exception {
          String createInput = "loginUser\nloginPass\n";
@@ -129,6 +129,17 @@ public class MenuLoginTest {
          assertNotNull(getLoggedInAccount(testMenuInstance));
          assertEquals("loginUser", getLoggedInAccount(testMenuInstance).getUsername());
      }
+
+    @Test
+    void testLogin_Success() throws Exception {
+    	String createInput = "loginUser\nloginPass\n";
+    	runStaticMenuMethodWithInput(createInput, "createAccount");
+
+    	String loginInput = "1\nloginUser\nloginPass\n\n";
+    	String loginOutput = runStaticMenuMethodWithInput(loginInput, "login");
+
+    	 assertTrue(loginOutput.contains("Login successful!"), "Output should confirm successful login.");
+    }
 
     @Test
     void testLogin_WrongPassword() throws Exception {

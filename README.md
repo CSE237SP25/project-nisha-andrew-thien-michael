@@ -45,29 +45,32 @@ A bank customer should be able to
 - track the balance of their account
 - use the menu
 - freeze their account
-- create either a checking or savings account with a unique account number
 
 # User stories for Iteration 2
 What user stories do you intend to complete next iteration?
 A bank customer should be able to 
-- view previous transactions
-- search for a specific transaction
+- view previous transactions(with date and time)
 - set monthly spending limits
 - forget password
-- see a welcome message when they log in
+- name their account
+- count total transactions
+- multiple transactions at once
+- account number generation
+- choice between either type of account
 
 # Attempted tasks that do not work yet
 Is there anything that you implemented but doesn't currently work?
 - we started to implement the view previous transactions, but it does not currently work. We have planned this for the next iteration. 
-- our login and signup may not work 
+- Login and Setup from UserMenu test does not work because of merging conflict, but the logic and functionality should still operate once Menu is fully operative. Will be fixed
 
-Commands to run our code
+Iteration 2
+- Works
 
+# Commands to run our code
 What commands are needed to compile and run your code from the command line (please provide a script that users can run to launch your program)?
 
     Open Eclipse and run Menu.java to operate the bank app.
     Run the Unit Tests to check if the functionalities of the logic in our bank app operate successfully.
-# Commands to run our code
-What commands are needed to compile and run your code from the command line (please provide a script that users can run to launch your program)?
+
 - javac bankapp/*.java
 - java bankapp.Menu
