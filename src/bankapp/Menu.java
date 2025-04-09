@@ -202,14 +202,6 @@ public class Menu {
     }
     
 
-public class Menu {
-    private static final Scanner scanner = new Scanner(System.in);
-    
-    public static void main(String[] args) {
-        BankAccount account = new BankAccount();
-        showMainMenu(account);
-    }
-
     public void showMainMenu() {
         boolean running = true;
 
@@ -223,19 +215,12 @@ public class Menu {
     private void promptUser() {
     	String accountIdentifier = this.loggedInAccount.getAccountName().isEmpty() ? this.loggedInAccount.getUsername() : this.loggedInAccount.getAccountName();
         System.out.println("\n=== Bank Menu (Account: " + accountIdentifier + ") ===");
-            int option = getUserOption();
-            running = processUserInput(option, account);
-        }
-    }
-
-    private static void promptUser() {
-        System.out.println("\n=== Bank Menu ===");
         System.out.println("1. View Current Balance");
         System.out.println("2. Deposit");
         System.out.println("3. Withdraw");
         System.out.println("4. View Balance History");
         System.out.println("5. Exit");
-		    System.out.println("6. Set Account Name");
+		System.out.println("6. Set Account Name");
         System.out.println("7. View Transaction History");
         System.out.println("8. View Transaction Count");
         System.out.println("9. Deposit Multiple Periods");
@@ -269,17 +254,6 @@ public class Menu {
     		}
     	}
     	return choice;
-        System.out.print("Choose an option: ");
-    }
-
-    private static int getUserOption() {
-        while (!scanner.hasNextInt()) {
-            System.out.println("Invalid input. Please enter a number between 1 and 5.");
-            scanner.next();
-        }
-        int option = scanner.nextInt();
-        scanner.nextLine();
-        return option;
     }
 
     private boolean processMenuChoice(int option) {
@@ -313,8 +287,6 @@ public class Menu {
             case 10:
                 withdrawMultiplePeriods();
                 break;
-            default:
-                System.out.println("Invalid option. Try again.");
         }
         return true;
     }
