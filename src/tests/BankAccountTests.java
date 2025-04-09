@@ -59,15 +59,16 @@ public class BankAccountTests {
 	
 	@Test
 	public void testIllegalWithdraw() {
-	    	BankAccount account = new BankAccount("Checking");
-	    	account.deposit(25);
-	    	try {
-	        	account.withdraw(50);
-	        	fail();
-	    	} catch (IllegalArgumentException e){
-	        	assertTrue(e != null);
-	    	}
-	}
+    	BankAccount account = new BankAccount("Checking");
+    	account.deposit(25);
+        try {
+            account.withdraw(50); // amount greater than balance
+            fail("Expected IllegalArgumentException not thrown.");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Insufficient funds. Amount is greater than balance.", e.getMessage());
+            assertEquals(25.0, account.getCurrentBalance(), 0.001); // balance unchanged
+        }
+    }
 
 	@Test
     public void testBalanceHistoryTracking() {

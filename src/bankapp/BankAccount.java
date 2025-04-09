@@ -43,14 +43,17 @@ public class BankAccount {
 	}
 
 	public void withdraw(double amount){
-		if(!this.isFrozen) {
-			if(amount < 0 || amount > this.balance){
-		        throw new IllegalArgumentException();
-		    }
+		if(this.isFrozen) return;
+			
+		if (amount <= 0) {
+			throw new IllegalArgumentException("Withdraw amount must be positive.");
+		}
+		if (amount > this.balance) {
+			throw new IllegalArgumentException("Insufficient funds. Amount greater than balance.");
+		}
 		    this.balance -= amount;
 		    balanceHistory.add(this.balance);
 		}
-	}
 	
 	public void freeze() {
 		this.isFrozen = true;
