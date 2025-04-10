@@ -114,6 +114,7 @@ public class Menu {
     	newAccount.setPassword(password);
     	this.accounts.put(username, newAccount);
     	System.out.println("Account created successfully!");
+    	System.out.println("Your account number is: " + newAccount.getAccountNumber());
     }
     
     private void login() {

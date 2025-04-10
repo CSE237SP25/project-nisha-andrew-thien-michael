@@ -3,6 +3,7 @@ package tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import java.util.List;
 import bankapp.Transaction;
@@ -320,7 +321,7 @@ public class BankAccountTests {
 	}
 }
 	
-    @Test
+  @Test
     public void testMonthlySpendingLimit() {
         BankAccount account = new BankAccount("Checking");
         account.deposit(500);
@@ -364,4 +365,16 @@ public class BankAccountTests {
 
         assertEquals(300.0, account.getMonthlySpendingLimit(), 0.001);
     }
+  
+	  @Test
+	  void testAccountNumberIsGeneratedCorrectly() {
+	    BankAccount acc1 = new BankAccount("Checking");
+	    BankAccount acc2 = new BankAccount("Savings");
+
+	    assertNotNull(acc1.getAccountNumber());
+	    assertTrue(acc1.getAccountNumber().startsWith("CHK-"));
+
+	    assertNotNull(acc2.getAccountNumber());
+	    assertTrue(acc2.getAccountNumber().startsWith("SVG-"));
+	}
 }
