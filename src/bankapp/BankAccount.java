@@ -3,7 +3,7 @@ package bankapp;
 import java.util.ArrayList;
 import java.util.List;
 import bankapp.Transaction;
-
+import java.util.UUID;
 
 public class BankAccount {
 
@@ -15,6 +15,7 @@ public class BankAccount {
 	private String password;
 	private String accountName;
 	private String accountType;
+	private String accountNumber;
 
 	public BankAccount(String accountType) {
 		if (!"Checking".equalsIgnoreCase(accountType) && !"Savings".equalsIgnoreCase(accountType)) {
@@ -22,6 +23,7 @@ public class BankAccount {
 		}
 		
 		this.accountType = accountType;
+		this.accountNumber = generateAccountNumber(accountType);
 		this.username = "";
 		this.password = "";
 		this.balanceHistory = new ArrayList<>();
@@ -132,5 +134,14 @@ public class BankAccount {
 	
 	public String getAccountType() {
 	    return accountType;
+	}
+	
+	private String generateAccountNumber(String type) {
+	    String prefix = type.equalsIgnoreCase("Checking") ? "CHK" : "SVG";
+	    return prefix + "-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+	}
+	
+	public String getAccountNumber() {
+	    return accountNumber;
 	}
 }
