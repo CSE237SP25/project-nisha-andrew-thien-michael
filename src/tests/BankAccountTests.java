@@ -321,8 +321,53 @@ public class BankAccountTests {
 	}
 }
 	
-	@Test
-	void testAccountNumberIsGeneratedCorrectly() {
+  @Test
+    public void testMonthlySpendingLimit() {
+        BankAccount account = new BankAccount("Checking");
+        account.deposit(500);
+        account.setMonthlySpendingLimit(100);
+        account.withdraw(70); // this should work
+
+        assertEquals(30.0, account.getMonthlySpendingLimit() - account.getCurrentSpent(), 0.001);
+
+        try {
+            account.withdraw(40); // this should fail
+            fail("Expected IllegalArgumentException not thrown.");
+        } catch (IllegalArgumentException e) {
+        	assertEquals("Withdrawal would exceed the monthly spending limit.", e.getMessage());
+        }
+
+        assertEquals(430.0, account.getCurrentBalance(), 0.001);
+    }
+
+    @Test
+    public void testResetMonthlySpent() {
+        BankAccount account = new BankAccount("Checking");
+        account.deposit(500);
+        account.setMonthlySpendingLimit(100);
+        account.withdraw(60);
+
+        assertEquals(60.0, account.getCurrentSpent(), 0.001);
+
+        account.resetMonthlySpending();
+
+        assertEquals(0.0, account.getCurrentSpent(), 0.001);
+    }
+
+    @Test
+    public void testSetAndUpdateMonthlyLimit() {
+        BankAccount account = new BankAccount("Checking");
+        account.setMonthlySpendingLimit(200.0);
+
+        assertEquals(200.0, account.getMonthlySpendingLimit(), 0.001);
+
+        account.setMonthlySpendingLimit(300.0); // update to a new value
+
+        assertEquals(300.0, account.getMonthlySpendingLimit(), 0.001);
+    }
+  
+	  @Test
+	  void testAccountNumberIsGeneratedCorrectly() {
 	    BankAccount acc1 = new BankAccount("Checking");
 	    BankAccount acc2 = new BankAccount("Savings");
 
