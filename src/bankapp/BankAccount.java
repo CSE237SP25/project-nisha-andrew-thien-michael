@@ -159,6 +159,7 @@ public class BankAccount {
 
 	public void resetMonthlySpending() {
 	    this.currentSpent = 0;
+	}
 
 	private String generateAccountNumber(String type) {
 	    String prefix = type.equalsIgnoreCase("Checking") ? "CHK" : "SVG";
