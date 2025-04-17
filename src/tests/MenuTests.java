@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +40,13 @@ public class MenuTests {
 		Field loggedInField = Menu.class.getDeclaredField("loggedInAccount");
 		loggedInField.setAccessible(true);
 		loggedInField.set(menuInstance, account);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private HashMap<String, BankAccount> getAccountsMap(Menu menuInstance) throws Exception {
+		Field accountsField = Menu.class.getDeclaredField("accounts");
+		accountsField.setAccessible(true);
+		return (HashMap<String, BankAccount>) accountsField.get(menuInstance);
 	}
 	
 	@BeforeEach
@@ -204,5 +212,161 @@ public class MenuTests {
     	catch(Exception e) {
     		fail("Test execution failed: " + e.getMessage(), e);
     	}
+    }
+    
+    @Test
+    public void trestTransferFundsSuccess() throws Exception {
+    	BankAccount sender = new BankAccount("Checking");
+    	sender.setUsername("sender1");
+    	sender.deposit(200.00);
+    	BankAccount recipient = new BankAccount("Savings");
+    	recipient.setUsername("receiver1");
+    	
+    	HashMap<String, BankAccount> accountMap = getAccountsMap(testMenuInstance);
+    	accountMap.put(sender.getUsername(), sender);
+    	accountMap.put(recipient.getUsername(), recipient);
+    	setLoggedInAccount(testMenuInstance, sender);
+    	
+    	String simulatedInput = "16\nreceiver1\n75.50\n5\n";
+    	ByteArrayInputStream testIn = new ByteArrayInputStream(simulatedInput.getBytes());
+    	setMenuScanner(testMenuInstance, testIn);
+    	
+    	testMenuInstance.showMainMenu();
+    	String output = testOut.toString().replace("\r\n", "\n");
+    	assertTrue(output.contains("Successfully transferred $75.50 to user 'receiver1'."), "Sucess message missing or incorrect.");
+    	
+    }
+    
+    @Test
+    public void testTransferFundsInsufficientFunds() throws Exception {
+    	BankAccount sender = new BankAccount("Checking");
+    	sender.setUsername("sender2");
+    	sender.deposit(50.00);
+    	BankAccount recipient = new BankAccount("Savings");
+    	recipient.setUsername("receiver2");
+    	
+    	HashMap<String, BankAccount> accountMap = getAccountsMap(testMenuInstance);
+    	accountMap.put(sender.getUsername(), sender);
+    	accountMap.put(recipient.getUsername(), recipient);
+    	setLoggedInAccount(testMenuInstance, sender);
+    	
+    	String simulatedInput = "16\nreceiver2\n75.00\n5\n";
+    	ByteArrayInputStream testIn = new ByteArrayInputStream(simulatedInput.getBytes());
+    	setMenuScanner(testMenuInstance, testIn);
+    	
+    	testMenuInstance.showMainMenu();
+    	String output = testOut.toString().replace("\r\n", "\n");
+    	assertTrue(output.contains("Transfer failed:"), "Failure indicator missing.");
+    	assertTrue(output.toLowerCase().contains("exceeds balance") || output.toLowerCase().contains("spending limit"),
+    	           "Error message should mention balance or spending limit issue.");
+    	
+    }
+    
+    @Test
+    public void testTransferFundsRecipientNotFound() throws Exception {
+    	BankAccount sender = new BankAccount("Checking");
+    	sender.setUsername("sender3");
+    	sender.deposit(100.00);
+    	
+    	HashMap<String, BankAccount> accountMap = getAccountsMap(testMenuInstance);
+    	accountMap.put(sender.getUsername(), sender);
+    	setLoggedInAccount(testMenuInstance, sender);
+    	
+    	String simulatedInput = "16\nnoOneHere\n50.00\n5\n";
+    	ByteArrayInputStream testIn = new ByteArrayInputStream(simulatedInput.getBytes());
+    	setMenuScanner(testMenuInstance, testIn);
+    	
+    	testMenuInstance.showMainMenu();
+    	String output = testOut.toString().replace("\r\n", "\n");
+    	assertTrue(output.contains("Error: Recipient user 'noOneHere' not found."), "Recipient not found message missing.");
+    }
+    
+    @Test
+    public void testTransferFundsToSelf() throws Exception {
+    	BankAccount sender = new BankAccount("Checking"); 
+    	sender.setUsername("selfSender"); 
+    	sender.deposit(100.00);
+    	
+    	HashMap<String, BankAccount> accountMap = getAccountsMap(testMenuInstance);
+    	accountMap.put(sender.getUsername(), sender);
+        setLoggedInAccount(testMenuInstance, sender);
+        
+        String simulatedInput = "16\nselfSender\n50.00\n5\n";
+        ByteArrayInputStream testIn = new ByteArrayInputStream(simulatedInput.getBytes());
+        setMenuScanner(testMenuInstance, testIn);
+        
+        testMenuInstance.showMainMenu();
+        
+        String output = testOut.toString().replace("\r\n", "\n");
+        assertTrue(output.contains("Error: Cannot transfer funds to yourself."), "Self-transfer error message missing.");
+    }
+    
+    @Test
+    public void testTransferFundsNegativeAmount() throws Exception {
+    	BankAccount sender = new BankAccount("Checking"); 
+    	sender.setUsername("sender4"); 
+    	sender.deposit(100.00);
+        BankAccount recipient = new BankAccount("Savings"); 
+        recipient.setUsername("receiver4");
+        
+        HashMap<String, BankAccount> accountMap = getAccountsMap(testMenuInstance);
+        accountMap.put(sender.getUsername(), sender);
+        accountMap.put(recipient.getUsername(), recipient);
+        setLoggedInAccount(testMenuInstance, sender);
+        
+        String simulatedInput = "16\nreceiver4\n-50.00\n5\n";
+        ByteArrayInputStream testIn = new ByteArrayInputStream(simulatedInput.getBytes());
+        setMenuScanner(testMenuInstance, testIn);
+        
+        testMenuInstance.showMainMenu();
+        String output = testOut.toString().replace("\r\n", "\n");
+        assertTrue(output.contains("Error: Transfer amount must be positive."), "Negative amount error missing.");
+    }
+    
+    @Test
+    public void testTransferFundsSenderFrozen() throws Exception {
+    	BankAccount sender = new BankAccount("Checking"); 
+    	sender.setUsername("frozenSender"); 
+    	sender.deposit(100.00); 
+    	sender.freeze();
+    	BankAccount recipient = new BankAccount("Savings"); 
+    	recipient.setUsername("receiver5");
+    	
+    	HashMap<String, BankAccount> accountMap = getAccountsMap(testMenuInstance);
+        accountMap.put(sender.getUsername(), sender);
+        accountMap.put(recipient.getUsername(), recipient);
+        setLoggedInAccount(testMenuInstance, sender);
+        
+        String simulatedInput = "16\nreceiver5\n50.00\n5\n";
+        ByteArrayInputStream testIn = new ByteArrayInputStream(simulatedInput.getBytes());
+        setMenuScanner(testMenuInstance, testIn);
+        
+        testMenuInstance.showMainMenu();
+        
+        String output = testOut.toString().replace("\r\n", "\n");
+        assertTrue(output.contains("Error: Your account is currently frozen."), "Sender frozen error missing.");
+    }
+    
+    @Test
+    public void testTransferFundsRecipientFrozen() throws Exception {
+    	BankAccount sender = new BankAccount("Checking"); 
+    	sender.setUsername("sender6"); 
+    	sender.deposit(100.00);
+        BankAccount recipient = new BankAccount("Savings"); 
+        recipient.setUsername("frozenReceiver"); 
+        recipient.freeze();
+        
+        HashMap<String, BankAccount> accountMap = getAccountsMap(testMenuInstance);
+        accountMap.put(sender.getUsername(), sender);
+        accountMap.put(recipient.getUsername(), recipient);
+        setLoggedInAccount(testMenuInstance, sender);
+        
+        String simulatedInput = "16\nfrozenReceiver\n50.00\n5\n";
+        ByteArrayInputStream testIn = new ByteArrayInputStream(simulatedInput.getBytes());
+        setMenuScanner(testMenuInstance, testIn);
+        
+        testMenuInstance.showMainMenu();
+        String output = testOut.toString().replace("\r\n", "\n");
+        assertTrue(output.contains("Error: Recipient's account is currently frozen."), "Recipient frozen error missing.");
     }
 }
