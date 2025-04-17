@@ -5,6 +5,9 @@ import java.util.Scanner;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Menu {
     private final Scanner scanner;
@@ -50,14 +53,17 @@ public class Menu {
     	System.out.println("1. Create Account");
     	System.out.println("2. Login");
     	System.out.println("3. Exit");
-    	System.out.print("Choose an option: ");
     }
     
     private int getUserAuthOption() {
-        System.out.print("Choose an option: ");
+        System.out.print("Choose an option (1-3): ");
         int choice = -1;
         try {
             choice = this.scanner.nextInt();
+            if (choice < 1 || choice > 3) {
+            	System.out.println("Invalid choice. Please enter a number between 1 and 3.");
+            	choice = -1;
+            }
         } catch (InputMismatchException e) {
             System.out.println("Invalid input. Please enter a whole number.");
         } catch (NoSuchElementException e) {
@@ -75,6 +81,7 @@ public class Menu {
         switch (choice) {
             case 1:
                 createAccount();
+                return true;
             case 2:
                 login();
                 return true;
@@ -238,16 +245,17 @@ public class Menu {
         System.out.println("12. View Monthly Spending Limit");
         System.out.println("13. View Amount Spent This Month");
         System.out.println("14. Reset Monthly Spending");
+        System.out.println("15. View Transactions Sorted by Amount (Largest First)");
         System.out.print("Choose an option: ");
     }
 
     private int getUserMenuOption() {
     	int choice = -1;
-    	while(choice < 1 || choice > 14) {
+    	while(choice < 1 || choice > 15) {
     		System.out.print("Choose an option (1-14): ");
     		try {
     			choice = this.scanner.nextInt();
-    			if(choice < 1 || choice > 14) {
+    			if(choice < 1 || choice > 15) {
     				System.out.println("Invalid choice. Please enter a number between 1 and 8.");
     				choice = -1;
     			}
@@ -312,6 +320,9 @@ public class Menu {
             case 14:
                 resetSpending();
                 break;
+            case 15:
+            	showSortedTransactionHistory();
+            	break;
         }
         return true;
     }
@@ -376,6 +387,7 @@ public class Menu {
     
     private void showTransactionHistory() {
         List<Transaction> transactions = this.loggedInAccount.getTransactions();
+        System.out.println("\n--- Transaction History (Chronological) ---");
         if (transactions.isEmpty()) {
             System.out.println("No transactions yet.");
         } else {
@@ -469,5 +481,27 @@ public class Menu {
     private void resetSpending() {
         loggedInAccount.resetMonthlySpending();
         System.out.println("Monthly spending reset.");
+    }
+    
+    private void showSortedTransactionHistory() {
+    	System.out.println("\n--- Transaction History (Sorted by Highest Amount)");
+    	List<Transaction> originalTransactions = this.loggedInAccount.getTransactions();
+    	if(originalTransactions.isEmpty()) {
+    		System.out.println("No transactions yet.");
+    	}
+    	else {
+    		List<Transaction> sortedTransactions = new ArrayList<>(originalTransactions);
+    		Collections.sort(sortedTransactions, new Comparator<Transaction>() {
+    			@Override
+    			public int compare(Transaction t1, Transaction t2) {
+    				return Double.compare(t2.getAmount(),  t1.getAmount());
+    			}
+    		});
+    		
+    		for (Transaction t : sortedTransactions) {
+    			System.out.println(t);
+    		}
+    	}
+    	printUserBalance();
     }
 }
