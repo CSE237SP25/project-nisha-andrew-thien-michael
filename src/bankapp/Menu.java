@@ -9,11 +9,13 @@ import java.util.NoSuchElementException;
 public class Menu {
     private final Scanner scanner;
     private final HashMap<String, BankAccount> accounts;
+    private final HashMap<String, Integer> failedLoginAttempts;
     private BankAccount loggedInAccount;
     
     public Menu() {
     	this.scanner = new Scanner(System.in);
     	this.accounts = new HashMap<>();
+    	this.failedLoginAttempts = new HashMap<>();
     	this.loggedInAccount = null;
     }
     
@@ -165,22 +167,42 @@ public class Menu {
     }
     
     private boolean performLogin() {
-    	System.out.print("Username: ");
-    	String username = this.scanner.nextLine().trim();
-    	System.out.print("Password: ");
-    	String password = this.scanner.nextLine();
-    	
-    	BankAccount acc = this.accounts.get(username);
-    	if(acc != null && acc.validatePassword(password)) {
-    		this.loggedInAccount = acc;
-    		System.out.println("\nLogin successful! Welcome " + acc.getUsername());
-    		return true;
-    	}
-    	else {
-    		System.out.println("Invalid login credentials.");
-    		return false;
-    	}
+        System.out.print("Username: ");
+        String username = this.scanner.nextLine().trim();
+        System.out.print("Password: ");
+        String password = this.scanner.nextLine();
+        BankAccount acc = this.accounts.get(username);
+        
+        if (acc == null) {
+            System.out.println("Invalid login credentials.");
+            return false;
+        }
+
+        if (acc.getFrozenStatus()) {
+            System.out.println("This account is frozen due to too many failed login attempts.");
+            return false;
+        }
+
+        if (acc.validatePassword(password)) {
+            this.loggedInAccount = acc;
+            failedLoginAttempts.put(username, 0);
+            System.out.println("\nLogin successful! Welcome " + acc.getUsername());
+            return true;
+        }
+
+        int attempts = failedLoginAttempts.getOrDefault(username, 0) + 1;
+        failedLoginAttempts.put(username, attempts);
+
+        if (attempts >= 5) {
+            acc.freeze();
+            System.out.println("Account has been frozen due to too many failed login attempts.");
+        } else {
+            System.out.println("Invalid login credentials. Attempt " + attempts + " of 5.");
+        }
+        
+        return false;
     }
+
     
     private void forgotPassword() {
     	System.out.print("Enter username: ");
@@ -210,6 +232,9 @@ public class Menu {
     	System.out.println("Password updated successfully!");
     }
     
+    private void freezeAccount(BankAccount account) {
+    	account.freeze(); 
+    }
 
     public void showMainMenu() {
         boolean running = true;
@@ -285,7 +310,7 @@ public class Menu {
                 break;
             case 5:
                 return false;
-			      case 6:
+			case 6:
                 setAccountName();
                 break;
             case 7:

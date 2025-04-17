@@ -121,4 +121,23 @@ public class MenuTests {
     		fail("Test execution failed: " + e.getMessage(), e);
     	}
     }
+    
+    @Test
+    public void testAccountFreezeFiveIncorrectTries() {
+    	String simulatedInput = "1" + System.lineSeparator() + "freezeUser" + System.lineSeparator() + "incorrect" + System.lineSeparator() + "1" + System.lineSeparator() + "freezeUser" + System.lineSeparator() + "incorrect" + System.lineSeparator() + "1" + System.lineSeparator() + "freezeUser" + System.lineSeparator() + "incorrect" + System.lineSeparator() + "1" + System.lineSeparator() + "freezeUser" + System.lineSeparator() + "incorrect" + System.lineSeparator() + "1" + System.lineSeparator() + "freezeUser" + System.lineSeparator() + "incorrect" + System.lineSeparator();
+    	BankAccount account = new BankAccount("Checking");
+    	account.setUsername("freezeUser");
+    	account.setPassword("freezePassword");
+    	assertTrue(!account.getFrozenStatus());
+    	ByteArrayInputStream testIn = new ByteArrayInputStream(simulatedInput.getBytes());
+    	
+    	try {
+    		setMenuScanner(testMenuInstance, testIn);
+        	assertTrue(account.getFrozenStatus());
+    	}
+    	catch (Exception e) {
+    		fail("Test execution failed: " + e.getMessage(), e);
+    	}
+    }
+    
 }
