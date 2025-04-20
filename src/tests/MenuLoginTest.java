@@ -211,4 +211,16 @@ public class MenuLoginTest {
         assertFalse(forgotOutput.contains("Password updated successfully!"));
         assertNull(getLoggedInAccount(testMenuInstance));
     }
+    
+    @Test
+    void testWarningAfterThreeFailedAttempts() throws Exception {
+        String createInput = "userX\npassX\nChecking\n";
+        runInstanceMenuMethodWithInput(createInput, "createAccount");
+
+        String loginInput = "1\nuserX\nwrong\n1\nuserX\nwrong\n1\nuserX\nwrong\n3\n";
+        String output = runInstanceMenuMethodWithInput(loginInput, "login");
+
+        assertTrue(output.contains("Warning: 3 unsuccessful login attempts."));
+    }
+
 }

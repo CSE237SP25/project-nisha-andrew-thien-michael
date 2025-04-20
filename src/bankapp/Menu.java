@@ -13,6 +13,8 @@ public class Menu {
     private final Scanner scanner;
     private final HashMap<String, BankAccount> accounts;
     private BankAccount loggedInAccount;
+    private int failedLoginAttempts = 0;
+
     
     public Menu() {
     	this.scanner = new Scanner(System.in);
@@ -172,23 +174,29 @@ public class Menu {
     }
     
     private boolean performLogin() {
-    	System.out.print("Username: ");
-    	String username = this.scanner.nextLine().trim();
-    	System.out.print("Password: ");
-    	String password = this.scanner.nextLine();
-    	
-    	BankAccount acc = this.accounts.get(username);
-    	if(acc != null && acc.validatePassword(password)) {
-    		this.loggedInAccount = acc;
-    		System.out.println("\nLogin successful! Welcome " + acc.getUsername());
-    		return true;
-    	}
-    	else {
-    		System.out.println("Invalid login credentials.");
-    		return false;
-    	}
+        System.out.print("Username: ");
+        String username = this.scanner.nextLine().trim();
+        System.out.print("Password: ");
+        String password = this.scanner.nextLine();
+
+        BankAccount acc = this.accounts.get(username);
+        if (acc != null && acc.validatePassword(password)) {
+            this.loggedInAccount = acc;
+            this.failedLoginAttempts = 0;
+            System.out.println("\nLogin successful! Welcome " + acc.getUsername());
+            return true;
+        } else {
+            failedLoginAttempts++;
+            System.out.println("Invalid login credentials.");
+
+            if (failedLoginAttempts == 3) {
+                System.out.println("Warning: 3 unsuccessful login attempts. Consider resetting your password.");
+            }
+
+            return false;
+        }
     }
-    
+
     private void forgotPassword() {
     	System.out.print("Enter username: ");
     	String username = this.scanner.nextLine();
