@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
 import java.util.List;
 import bankapp.Transaction;
 import java.time.LocalDateTime;
@@ -377,4 +379,30 @@ public class BankAccountTests {
 	    assertNotNull(acc2.getAccountNumber());
 	    assertTrue(acc2.getAccountNumber().startsWith("SVG-"));
 	}
+	
+	  @Test
+	  public void testSearchTransactionByTypeAndAmount() {
+	      BankAccount account = new BankAccount("Checking");
+
+	      account.deposit(100.0);
+	      account.withdraw(50.0);
+	      account.deposit(100.0);  
+
+	      String searchType = "deposit";
+	      double searchAmount = 100.0;
+
+	      List<Transaction> results = new ArrayList<>();
+	      for (Transaction t : account.getTransactions()) {
+	          if (t.getType().equalsIgnoreCase(searchType) && t.getAmount() == searchAmount) {
+	              results.add(t);
+	          }
+	      }
+
+	      assertEquals(2, results.size());
+	      assertTrue(results.get(0).getType().equalsIgnoreCase("deposit"));
+	      assertEquals(100.0, results.get(0).getAmount(), 0.001);
+	      assertTrue(results.get(1).getType().equalsIgnoreCase("deposit"));
+	      assertEquals(100.0, results.get(1).getAmount(), 0.001);
+	  }
+
 }
