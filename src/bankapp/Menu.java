@@ -247,18 +247,19 @@ public class Menu {
         System.out.println("14. Reset Monthly Spending");
         System.out.println("15. View Transactions Sorted by Amount (Largest First)");
         System.out.println("16. Transfer Funds");
+        System.out.println("17. Search Transactions");
         System.out.print("Choose an option: ");
     }
 
     private int getUserMenuOption() {
     	int choice = -1;
-    	int maxOption = 16;
+    	int maxOption = 17;
     	while(choice < 1 || choice > maxOption) {
-    		System.out.print("Choose an option (1-14): ");
+    		System.out.print("Choose an option (1-17): ");
     		try {
     			choice = this.scanner.nextInt();
     			if(choice < 1 || choice > maxOption) {
-    				System.out.println("Invalid choice. Please enter a number between 1 and 8.");
+    				System.out.println("Invalid choice. Please enter a number between 1 and 17.");
     				choice = -1;
     			}
     		}
@@ -328,6 +329,10 @@ public class Menu {
             case 16:
             	handleTransferFunds();
             	break;
+            case 17:
+                searchTransactions();
+                break;
+
         }
         return true;
     }
@@ -573,4 +578,36 @@ public class Menu {
     		e.printStackTrace();
     	}
     }
+    
+    private void searchTransactions() {
+        System.out.println("\n--- Search Transactions ---");
+        System.out.print("Enter type to search (deposit or withdraw): ");
+        String type = scanner.nextLine().trim().toLowerCase();
+
+        System.out.print("Enter amount to search: ");
+        if (!scanner.hasNextDouble()) {
+            System.out.println("Invalid amount entered.");
+            scanner.nextLine();
+            return;
+        }
+        double amount = scanner.nextDouble();
+        scanner.nextLine();
+
+        List<Transaction> results = new ArrayList<>();
+        for (Transaction t : this.loggedInAccount.getTransactions()) {
+            if (t.getType().equalsIgnoreCase(type) && t.getAmount() == amount) {
+                results.add(t);
+            }
+        }
+
+        if (results.isEmpty()) {
+            System.out.println("No transactions found matching the criteria.");
+        } else {
+            System.out.println("Matching Transactions:");
+            for (Transaction t : results) {
+                System.out.println(t);
+            }
+        }
+    }
+
 }
