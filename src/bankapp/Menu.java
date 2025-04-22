@@ -260,23 +260,24 @@ public class Menu {
         System.out.println("15. View Transactions Sorted by Amount (Largest First)");
         System.out.println("16. Transfer Funds");
         System.out.println("17. Search Transactions");
+        System.out.println("18. Change Your Username");
         System.out.print("Choose an option: ");
     }
 
     private int getUserMenuOption() {
     	int choice = -1;
-    	int maxOption = 17;
+    	int maxOption = 18;
     	while(choice < 1 || choice > maxOption) {
-    		System.out.print("Choose an option (1-17): ");
+    		System.out.print("Choose an option (1-18): ");
     		try {
     			choice = this.scanner.nextInt();
     			if(choice < 1 || choice > maxOption) {
-    				System.out.println("Invalid choice. Please enter a number between 1 and 17.");
+    				System.out.println("Invalid choice. Please enter a number between 1 and 18.");
     				choice = -1;
     			}
     		}
     		catch (InputMismatchException e) {
-    			System.out.println("Invalid input. Please enter a numb11er.");
+    			System.out.println("Invalid input. Please enter a number.");
     			choice = -1;
     		}
     		catch (NoSuchElementException e) {
@@ -308,7 +309,7 @@ public class Menu {
                 break;
             case 5:
                 return false;
-			      case 6:
+			case 6:
                 setAccountName();
                 break;
             case 7:
@@ -344,6 +345,9 @@ public class Menu {
             case 17:
                 searchTransactions();
                 break;
+            case 18:
+            	changeUsername();
+            	break;
 
         }
         return true;
@@ -620,6 +624,19 @@ public class Menu {
                 System.out.println(t);
             }
         }
+    }
+    
+    private void changeUsername() {
+    	System.out.print("Enter new username: ");
+    	String newUsername = this.scanner.nextLine();
+    	
+    	if (newUsername.isEmpty()) {
+    		System.out.println("Username cannot be empty.");
+    		return;
+    	}
+    	
+    	loggedInAccount.setUsername(newUsername);
+    	System.out.println("Username updated successfully!");
     }
 
 }

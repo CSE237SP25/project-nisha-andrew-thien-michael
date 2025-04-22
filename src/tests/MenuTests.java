@@ -369,4 +369,16 @@ public class MenuTests {
         String output = testOut.toString().replace("\r\n", "\n");
         assertTrue(output.contains("Error: Recipient's account is currently frozen."), "Recipient frozen error missing.");
     }
+    
+    @Test
+    public void changeUsername() throws Exception{
+    	BankAccount account = new BankAccount("Checking");
+    	account.setUsername("initial");
+    	String simulatedInput = "18\nchanged\n";
+        setLoggedInAccount(testMenuInstance, account);
+        ByteArrayInputStream testIn = new ByteArrayInputStream(simulatedInput.getBytes());
+        setMenuScanner(testMenuInstance, testIn);
+        testMenuInstance.showMainMenu();
+    	assertTrue(account.getUsername().equals("changed"));
+    }
 }
