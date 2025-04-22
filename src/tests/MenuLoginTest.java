@@ -222,5 +222,18 @@ public class MenuLoginTest {
 
         assertTrue(output.contains("Warning: 3 unsuccessful login attempts."));
     }
+    
+    @Test
+    void testFreezeAfterFiveFailedAttempts() throws Exception {
+    	String createInput = "userX\npassX\nChecking\n";
+    	runInstanceMenuMethodWithInput(createInput, "createAccount");
+    	
+
+        String loginInput = "1\nuserX\nwrong\n1\nuserX\nwrong\n1\nuserX\nwrong\n1\nuserX\nwrong\n1\nuserX\nwrong\n5\n";
+        String output = runInstanceMenuMethodWithInput(loginInput, "login");
+        HashMap<String, BankAccount> accounts = getAccountsMap(testMenuInstance);
+        assertTrue(accounts.get("userX").getFrozenStatus());
+        assertTrue(output.contains("Account frozen after 5 unsuccessful login attempts."));
+    }
 
 }

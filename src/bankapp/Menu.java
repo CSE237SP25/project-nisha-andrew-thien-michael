@@ -192,6 +192,10 @@ public class Menu {
             if (failedLoginAttempts == 3) {
                 System.out.println("Warning: 3 unsuccessful login attempts. Consider resetting your password.");
             }
+            else if(failedLoginAttempts == 5) {
+            	acc.freeze();
+            	System.out.println("Account frozen after 5 unsuccessful login attempts.");
+            }
 
             return false;
         }
