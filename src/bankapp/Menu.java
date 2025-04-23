@@ -535,68 +535,90 @@ public class Menu {
     }
     
     private void handleTransferFunds() {
-    	System.out.println("\n--- Transfe Funds ---");
-    	System.out.print("Enter the username of the recipient: ");
-    	String targetUsername = this.scanner.nextLine().trim();
-    	if(targetUsername.isEmpty()) {
-    		System.out.println("Recipient username cannot be empty.");
-    		return;
-    	}
-    	if(targetUsername.equals(this.loggedInAccount.getUsername())) {
-    		System.out.println("Error: Cannot transfer funds to yourself.");
-    		return;
-    	}
-    	BankAccount targetAccount = this.accounts.get(targetUsername);
-    	if (targetAccount == null) {
-    		System.out.println("Error: Recipient user '" + targetUsername + "' not found.");
-    		return;
-    	}
-    	
-    	System.out.print("Enter amount to transfer: $");
-    	double amount = -1;
-    	try {
-    		amount = this.scanner.nextDouble();
-    	}
-    	catch (InputMismatchException e) {
-    		System.out.println("Invalid amount. Please enter a valid number.");
-    		if(this.scanner.hasNextLine()) {
-    			this.scanner.hasNextLine();
-    		}
-    		return;
-    	}
-    	finally {
-    		if (this.scanner.hasNextLine()) {
-    			this.scanner.nextLine();
-    		}
-    	}
-    	if(amount <= 0) {
-    		System.out.println("Error: Transfer amount must be positive.");
-    		return;
-    	}
-    	
-    	try {
-    		if (this.loggedInAccount.getFrozenStatus()) {
-    			System.out.println("Error: Your account is currently frozen. Cannot initiate transfer.");
-    			return;
-    		}
-    		if (targetAccount.getFrozenStatus()) {
-    			System.out.println("Error: Recipient's account is currently frozen. Cannot complete transfer.");
-    			return;
-    		}
-    		this.loggedInAccount.withdraw(amount);
-    		targetAccount.deposit(amount);
-    		System.out.printf("Successfully transferred $%.2f to user '%s'.%n", amount, targetUsername);
-    		System.out.println("Your new balance: ");
-    		printUserBalance();
-    	}
-    	catch(IllegalArgumentException e) {
-    		System.out.println("Transfer failed: " + e.getMessage());
-    	}
-    	catch(Exception e) {
-    		System.out.println("An unexpected error occured.");
-    		e.printStackTrace();
-    	}
+        System.out.println("\n--- Transfer Funds ---");
+
+        String targetUsername = promptForRecipientUsername();
+        if (targetUsername == null) return;
+
+        BankAccount targetAccount = validateRecipient(targetUsername);
+        if (targetAccount == null) return;
+
+        Double amount = promptForTransferAmount();
+        if (amount == null || amount <= 0) {
+            System.out.println("Error: Transfer amount must be positive.");
+            return;
+        }
+
+        executeTransfer(targetAccount, amount);
     }
+
+    private String promptForRecipientUsername() {
+        System.out.print("Enter the username of the recipient: ");
+        String username = this.scanner.nextLine().trim();
+
+        if (username.isEmpty()) {
+            System.out.println("Recipient username cannot be empty.");
+            return null;
+        }
+
+        if (username.equals(this.loggedInAccount.getUsername())) {
+            System.out.println("Error: Cannot transfer funds to yourself.");
+            return null;
+        }
+
+        return username;
+    }
+
+    private BankAccount validateRecipient(String username) {
+        BankAccount account = this.accounts.get(username);
+        if (account == null) {
+            System.out.println("Error: Recipient user '" + username + "' not found.");
+            return null;
+        }
+        return account;
+    }
+
+    private Double promptForTransferAmount() {
+        System.out.print("Enter amount to transfer: $");
+        try {
+            double amount = this.scanner.nextDouble();
+            return amount;
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid amount. Please enter a valid number.");
+            return null;
+        } finally {
+            if (this.scanner.hasNextLine()) {
+                this.scanner.nextLine();
+            }
+        }
+    }
+
+    private void executeTransfer(BankAccount recipient, double amount) {
+        try {
+            if (this.loggedInAccount.getFrozenStatus()) {
+                System.out.println("Error: Your account is currently frozen. Cannot initiate transfer.");
+                return;
+            }
+
+            if (recipient.getFrozenStatus()) {
+                System.out.println("Error: Recipient's account is currently frozen. Cannot complete transfer.");
+                return;
+            }
+
+            this.loggedInAccount.withdraw(amount);
+            recipient.deposit(amount);
+
+            System.out.printf("Successfully transferred $%.2f to user '%s'.%n", amount, recipient.getUsername());
+            System.out.println("Your new balance: ");
+            printUserBalance();
+        } catch (IllegalArgumentException e) {
+            System.out.println("Transfer failed: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred.");
+            e.printStackTrace();
+        }
+    }
+
     
     private void searchTransactions() {
         System.out.println("\n--- Search Transactions ---");
