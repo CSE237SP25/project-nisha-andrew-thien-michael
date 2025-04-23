@@ -261,14 +261,15 @@ public class Menu {
         System.out.println("16. Transfer Funds");
         System.out.println("17. Search Transactions");
         System.out.println("18. Change Your Username");
+        System.out.println("19. View Monthly Spending Progress");
         System.out.print("Choose an option: ");
     }
 
     private int getUserMenuOption() {
     	int choice = -1;
-    	int maxOption = 18;
+    	int maxOption = 19;
     	while(choice < 1 || choice > maxOption) {
-    		System.out.print("Choose an option (1-18): ");
+    		System.out.print("Choose an option (1-19): ");
     		try {
     			choice = this.scanner.nextInt();
     			if(choice < 1 || choice > maxOption) {
@@ -348,7 +349,9 @@ public class Menu {
             case 18:
             	changeUsername();
             	break;
-
+            case 19:
+                showSpendingProgressBar();
+                break;
         }
         return true;
     }
@@ -638,5 +641,9 @@ public class Menu {
     	loggedInAccount.setUsername(newUsername);
     	System.out.println("Username updated successfully!");
     }
-
+    
+    private void showSpendingProgressBar() {
+        System.out.println("\n--- Monthly Spending Progress ---");
+        System.out.println(loggedInAccount.getMonthlySpendingProgressBar());
+    }
 }

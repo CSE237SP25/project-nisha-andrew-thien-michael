@@ -381,4 +381,30 @@ public class MenuTests {
         testMenuInstance.showMainMenu();
     	assertTrue(account.getUsername().equals("changed"));
     }
+    
+    @Test
+    public void testProgressBarAtZeroPercent() {
+        BankAccount account = new BankAccount("Checking");
+        account.setMonthlySpendingLimit(100);
+        assertEquals("[----------] 0.0%", account.getMonthlySpendingProgressBar());
+    }
+
+    @Test
+    public void testProgressBarAtFullLimit() {
+        BankAccount account = new BankAccount("Checking");
+        account.setMonthlySpendingLimit(100);
+        account.deposit(200);  
+        account.withdraw(100);
+        assertEquals("[##########] 100.0%", account.getMonthlySpendingProgressBar());
+    }
+
+    @Test
+    public void testProgressBarAtHalfLimit() {
+        BankAccount account = new BankAccount("Checking");
+        account.setMonthlySpendingLimit(100);
+        account.deposit(200);
+        account.withdraw(50);
+        assertEquals("[#####-----] 50.0%", account.getMonthlySpendingProgressBar());
+    }
+
 }

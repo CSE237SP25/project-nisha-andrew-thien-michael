@@ -169,4 +169,12 @@ public class BankAccount {
 	public String getAccountNumber() {
 	    return accountNumber;
 	}
+	
+	public String getMonthlySpendingProgressBar() {
+	    if (monthlySpendingLimit == 0) return "[----------] 0%";
+	    double percent = Math.min(100.0, (currentSpent / monthlySpendingLimit) * 100);
+	    int filled = (int)(percent / 10);
+	    int empty = 10 - filled;
+	    return "[" + "#".repeat(filled) + "-".repeat(empty) + "] " + String.format("%.1f", percent) + "%";
+	}
 }

@@ -404,5 +404,4 @@ public class BankAccountTests {
 	      assertTrue(results.get(1).getType().equalsIgnoreCase("deposit"));
 	      assertEquals(100.0, results.get(1).getAmount(), 0.001);
 	  }
-
 }
