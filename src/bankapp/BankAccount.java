@@ -48,28 +48,47 @@ public class BankAccount {
 		}
 	}
 
-	public void withdraw(double amount){
-		if(!this.isFrozen) {
-			if(amount < 0 || amount > this.balance){
-		        throw new IllegalArgumentException();
-		    }
-	        if (this.currentSpent + amount > this.monthlySpendingLimit) {
-	            throw new IllegalArgumentException("Withdrawal would exceed the monthly spending limit.");
+	public void withdraw(double amount) {
+	    if (!this.isFrozen) {
+	        validateWithdrawalAmount(amount);
+	        validateSpendingLimit(amount);
+	        processWithdrawal(amount);
+	        recordTransaction("withdraw", amount);
+	        notifyIfCloseToSpendingLimit();
+	    }
+	}
+
+	private void validateWithdrawalAmount(double amount) {
+	    if (amount < 0 || amount > this.balance) {
+	        throw new IllegalArgumentException("Invalid withdrawal amount.");
+	    }
+	}
+
+	private void validateSpendingLimit(double amount) {
+	    if (this.currentSpent + amount > this.monthlySpendingLimit) {
+	        throw new IllegalArgumentException("Withdrawal would exceed the monthly spending limit.");
+	    }
+	}
+
+	private void processWithdrawal(double amount) {
+	    this.balance -= amount;
+	    this.currentSpent += amount;
+	    balanceHistory.add(this.balance);
+	    System.out.println("Withdrawn: " + amount);
+	}
+
+	private void recordTransaction(String type, double amount) {
+	    this.transactions.add(new Transaction(type, amount));
+	}
+
+	private void notifyIfCloseToSpendingLimit() {
+	    if (this.monthlySpendingLimit != Double.MAX_VALUE) {
+	        double percentUsed = (this.currentSpent / this.monthlySpendingLimit) * 100;
+	        if (percentUsed >= 80 && percentUsed < 100) {
+	            System.out.printf("⚠️ Warning: You've used %.1f%% of your monthly spending limit!\n", percentUsed);
 	        }
-		    this.balance -= amount;
-	        this.currentSpent += amount;
-		    balanceHistory.add(this.balance);
-		    this.transactions.add(new Transaction("withdraw", amount));
-            System.out.println("Withdrawn: " + amount);
-            
-    		if (this.monthlySpendingLimit != Double.MAX_VALUE) {
-    			double percentUsed = (this.currentSpent / this.monthlySpendingLimit) * 100;
-    			if (percentUsed >= 80 && percentUsed < 100) {
-    				System.out.printf("⚠️ Warning: You've used %.1f%% of your monthly spending limit!\n", percentUsed);
-    			}
-    		}
-    	}
-    }
+	    }
+	}
 
 	public void depositMultiplePeriods(double amount, int periods) {
 		if (amount < 0 || periods <= 0) {
