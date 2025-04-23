@@ -3,7 +3,7 @@ package bankapp;
 import java.util.ArrayList;
 import java.util.List;
 import bankapp.Transaction;
-
+import java.util.UUID;
 
 public class BankAccount {
 
@@ -14,10 +14,18 @@ public class BankAccount {
 	private String username;
 	private String password;
 	private String accountName;
+	private String accountType;
+	private double monthlySpendingLimit = Double.MAX_VALUE;
+	private double currentSpent = 0.0;
+	private String accountNumber;
 
-
-	
-	public BankAccount() {
+	public BankAccount(String accountType) {
+		if (!"Checking".equalsIgnoreCase(accountType) && !"Savings".equalsIgnoreCase(accountType)) {
+		    throw new IllegalArgumentException("Account type must be 'Checking' or 'Savings'.");
+		}
+		
+		this.accountType = accountType;
+		this.accountNumber = generateAccountNumber(accountType);
 		this.username = "";
 		this.password = "";
 		this.balanceHistory = new ArrayList<>();
@@ -45,12 +53,23 @@ public class BankAccount {
 			if(amount < 0 || amount > this.balance){
 		        throw new IllegalArgumentException();
 		    }
+	        if (this.currentSpent + amount > this.monthlySpendingLimit) {
+	            throw new IllegalArgumentException("Withdrawal would exceed the monthly spending limit.");
+	        }
 		    this.balance -= amount;
+	        this.currentSpent += amount;
 		    balanceHistory.add(this.balance);
 		    this.transactions.add(new Transaction("withdraw", amount));
             System.out.println("Withdrawn: " + amount);
-		}
-	}
+            
+    		if (this.monthlySpendingLimit != Double.MAX_VALUE) {
+    			double percentUsed = (this.currentSpent / this.monthlySpendingLimit) * 100;
+    			if (percentUsed >= 80 && percentUsed < 100) {
+    				System.out.printf("⚠️ Warning: You've used %.1f%% of your monthly spending limit!\n", percentUsed);
+    			}
+    		}
+    	}
+    }
 
 	public void depositMultiplePeriods(double amount, int periods) {
 		if (amount < 0 || periods <= 0) {
@@ -125,5 +144,44 @@ public class BankAccount {
 	public List<Transaction> getTransactions() {
 	    return new ArrayList<>(transactions);
 	}
+	
+	public String getAccountType() {
+	    return accountType;
+	}
+	
+	public void setMonthlySpendingLimit(double limit) {
+	    if (limit < 0) {
+	        throw new IllegalArgumentException("Spending limit must be non-negative.");
+	    }
+	    this.monthlySpendingLimit = limit;
+	}
 
+	public double getMonthlySpendingLimit() {
+	    return this.monthlySpendingLimit;
+	}
+
+	public double getCurrentSpent() {
+	    return this.currentSpent;
+	}
+
+	public void resetMonthlySpending() {
+	    this.currentSpent = 0;
+	}
+
+	private String generateAccountNumber(String type) {
+	    String prefix = type.equalsIgnoreCase("Checking") ? "CHK" : "SVG";
+	    return prefix + "-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+	}
+	
+	public String getAccountNumber() {
+	    return accountNumber;
+	}
+	
+	public String getMonthlySpendingProgressBar() {
+	    if (monthlySpendingLimit == 0) return "[----------] 0%";
+	    double percent = Math.min(100.0, (currentSpent / monthlySpendingLimit) * 100);
+	    int filled = (int)(percent / 10);
+	    int empty = 10 - filled;
+	    return "[" + "#".repeat(filled) + "-".repeat(empty) + "] " + String.format("%.1f", percent) + "%";
+	}
 }

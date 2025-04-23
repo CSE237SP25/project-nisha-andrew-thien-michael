@@ -5,11 +5,16 @@ import java.util.Scanner;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Menu {
     private final Scanner scanner;
     private final HashMap<String, BankAccount> accounts;
     private BankAccount loggedInAccount;
+    private int failedLoginAttempts = 0;
+
     
     public Menu() {
     	this.scanner = new Scanner(System.in);
@@ -50,14 +55,17 @@ public class Menu {
     	System.out.println("1. Create Account");
     	System.out.println("2. Login");
     	System.out.println("3. Exit");
-    	System.out.print("Choose an option: ");
     }
     
     private int getUserAuthOption() {
-        System.out.print("Choose an option: ");
+        System.out.print("Choose an option (1-3): ");
         int choice = -1;
         try {
             choice = this.scanner.nextInt();
+            if (choice < 1 || choice > 3) {
+            	System.out.println("Invalid choice. Please enter a number between 1 and 3.");
+            	choice = -1;
+            }
         } catch (InputMismatchException e) {
             System.out.println("Invalid input. Please enter a whole number.");
         } catch (NoSuchElementException e) {
@@ -75,6 +83,7 @@ public class Menu {
         switch (choice) {
             case 1:
                 createAccount();
+                return true;
             case 2:
                 login();
                 return true;
@@ -101,11 +110,20 @@ public class Menu {
     		System.out.println("Password cannot be empty.");
     		return;
     	}
-    	BankAccount newAccount = new BankAccount();
+    	System.out.print("Enter account type (Checking or Savings): ");
+    	String accountType = this.scanner.nextLine().trim();
+    	BankAccount newAccount;
+    	try {
+    	    newAccount = new BankAccount(accountType);
+    	} catch (IllegalArgumentException e) {
+    	    System.out.println("Error: " + e.getMessage());
+    	    return;
+    	}
     	newAccount.setUsername(username);
     	newAccount.setPassword(password);
     	this.accounts.put(username, newAccount);
     	System.out.println("Account created successfully!");
+    	System.out.println("Your account number is: " + newAccount.getAccountNumber());
     }
     
     private void login() {
@@ -156,23 +174,33 @@ public class Menu {
     }
     
     private boolean performLogin() {
-    	System.out.print("Username: ");
-    	String username = this.scanner.nextLine().trim();
-    	System.out.print("Password: ");
-    	String password = this.scanner.nextLine();
-    	
-    	BankAccount acc = this.accounts.get(username);
-    	if(acc != null && acc.validatePassword(password)) {
-    		this.loggedInAccount = acc;
-    		System.out.println("\nLogin successful! Welcome " + acc.getUsername());
-    		return true;
-    	}
-    	else {
-    		System.out.println("Invalid login credentials.");
-    		return false;
-    	}
+        System.out.print("Username: ");
+        String username = this.scanner.nextLine().trim();
+        System.out.print("Password: ");
+        String password = this.scanner.nextLine();
+
+        BankAccount acc = this.accounts.get(username);
+        if (acc != null && acc.validatePassword(password)) {
+            this.loggedInAccount = acc;
+            this.failedLoginAttempts = 0;
+            System.out.println("\nLogin successful! Welcome " + acc.getUsername());
+            return true;
+        } else {
+            failedLoginAttempts++;
+            System.out.println("Invalid login credentials.");
+
+            if (failedLoginAttempts == 3) {
+                System.out.println("Warning: 3 unsuccessful login attempts. Consider resetting your password.");
+            }
+            else if(failedLoginAttempts == 5) {
+            	acc.freeze();
+            	System.out.println("Account frozen after 5 unsuccessful login attempts.");
+            }
+
+            return false;
+        }
     }
-    
+
     private void forgotPassword() {
     	System.out.print("Enter username: ");
     	String username = this.scanner.nextLine();
@@ -225,22 +253,32 @@ public class Menu {
         System.out.println("8. View Transaction Count");
         System.out.println("9. Deposit Multiple Periods");
         System.out.println("10. Withdraw Multiple Periods");
+        System.out.println("11. Set Monthly Spending Limit");
+        System.out.println("12. View Monthly Spending Limit");
+        System.out.println("13. View Amount Spent This Month");
+        System.out.println("14. Reset Monthly Spending");
+        System.out.println("15. View Transactions Sorted by Amount (Largest First)");
+        System.out.println("16. Transfer Funds");
+        System.out.println("17. Search Transactions");
+        System.out.println("18. Change Your Username");
+        System.out.println("19. View Monthly Spending Progress");
         System.out.print("Choose an option: ");
     }
 
     private int getUserMenuOption() {
     	int choice = -1;
-    	while(choice < 1 || choice > 8) {
-    		System.out.print("Choose an option (1-10): ");
+    	int maxOption = 19;
+    	while(choice < 1 || choice > maxOption) {
+    		System.out.print("Choose an option (1-19): ");
     		try {
     			choice = this.scanner.nextInt();
-    			if(choice < 1 || choice > 8) {
-    				System.out.println("Invalid choice. Please enter a number between 1 and 8.");
+    			if(choice < 1 || choice > maxOption) {
+    				System.out.println("Invalid choice. Please enter a number between 1 and 18.");
     				choice = -1;
     			}
     		}
     		catch (InputMismatchException e) {
-    			System.out.println("Invalid input. Please enter a nubmer.");
+    			System.out.println("Invalid input. Please enter a number.");
     			choice = -1;
     		}
     		catch (NoSuchElementException e) {
@@ -272,7 +310,7 @@ public class Menu {
                 break;
             case 5:
                 return false;
-			      case 6:
+			case 6:
                 setAccountName();
                 break;
             case 7:
@@ -286,6 +324,33 @@ public class Menu {
                 break;
             case 10:
                 withdrawMultiplePeriods();
+                break;
+            case 11:
+                setSpendingLimit();
+                break;
+            case 12:
+                viewSpendingLimit();
+                break;
+            case 13:
+                viewAmountSpentThisMonth();
+                break;
+            case 14:
+                resetSpending();
+                break;
+            case 15:
+            	showSortedTransactionHistory();
+            	break;
+            case 16:
+            	handleTransferFunds();
+            	break;
+            case 17:
+                searchTransactions();
+                break;
+            case 18:
+            	changeUsername();
+            	break;
+            case 19:
+                showSpendingProgressBar();
                 break;
         }
         return true;
@@ -351,6 +416,7 @@ public class Menu {
     
     private void showTransactionHistory() {
         List<Transaction> transactions = this.loggedInAccount.getTransactions();
+        System.out.println("\n--- Transaction History (Chronological) ---");
         if (transactions.isEmpty()) {
             System.out.println("No transactions yet.");
         } else {
@@ -414,5 +480,192 @@ public class Menu {
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
         }
+    }
+    
+    private void setSpendingLimit() {
+        System.out.print("Enter monthly spending limit: ");
+        if (!scanner.hasNextDouble()) {
+            System.out.println("Invalid input. Please enter a valid number.");
+            scanner.next();
+            return;
+        }
+        double limit = scanner.nextDouble();
+        scanner.nextLine();
+        try {
+            loggedInAccount.setMonthlySpendingLimit(limit);
+            System.out.println("Monthly spending limit set to $" + limit);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void viewSpendingLimit() {
+        System.out.println("Monthly Spending Limit: $" + loggedInAccount.getMonthlySpendingLimit());
+    }
+
+    private void viewAmountSpentThisMonth() {
+        System.out.println("Amount Spent This Month: $" + loggedInAccount.getCurrentSpent());
+    }
+
+    private void resetSpending() {
+        loggedInAccount.resetMonthlySpending();
+        System.out.println("Monthly spending reset.");
+    }
+    
+    private void showSortedTransactionHistory() {
+    	System.out.println("\n--- Transaction History (Sorted by Highest Amount)");
+    	List<Transaction> originalTransactions = this.loggedInAccount.getTransactions();
+    	if(originalTransactions.isEmpty()) {
+    		System.out.println("No transactions yet.");
+    	}
+    	else {
+    		List<Transaction> sortedTransactions = new ArrayList<>(originalTransactions);
+    		Collections.sort(sortedTransactions, new Comparator<Transaction>() {
+    			@Override
+    			public int compare(Transaction t1, Transaction t2) {
+    				return Double.compare(t2.getAmount(),  t1.getAmount());
+    			}
+    		});
+    		
+    		for (Transaction t : sortedTransactions) {
+    			System.out.println(t);
+    		}
+    	}
+    	printUserBalance();
+    }
+    
+    private void handleTransferFunds() {
+        System.out.println("\n--- Transfer Funds ---");
+
+        String targetUsername = promptForRecipientUsername();
+        if (targetUsername == null) return;
+
+        BankAccount targetAccount = validateRecipient(targetUsername);
+        if (targetAccount == null) return;
+
+        Double amount = promptForTransferAmount();
+        if (amount == null || amount <= 0) {
+            System.out.println("Error: Transfer amount must be positive.");
+            return;
+        }
+
+        executeTransfer(targetAccount, amount);
+    }
+
+    private String promptForRecipientUsername() {
+        System.out.print("Enter the username of the recipient: ");
+        String username = this.scanner.nextLine().trim();
+
+        if (username.isEmpty()) {
+            System.out.println("Recipient username cannot be empty.");
+            return null;
+        }
+
+        if (username.equals(this.loggedInAccount.getUsername())) {
+            System.out.println("Error: Cannot transfer funds to yourself.");
+            return null;
+        }
+
+        return username;
+    }
+
+    private BankAccount validateRecipient(String username) {
+        BankAccount account = this.accounts.get(username);
+        if (account == null) {
+            System.out.println("Error: Recipient user '" + username + "' not found.");
+            return null;
+        }
+        return account;
+    }
+
+    private Double promptForTransferAmount() {
+        System.out.print("Enter amount to transfer: $");
+        try {
+            double amount = this.scanner.nextDouble();
+            return amount;
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid amount. Please enter a valid number.");
+            return null;
+        } finally {
+            if (this.scanner.hasNextLine()) {
+                this.scanner.nextLine();
+            }
+        }
+    }
+
+    private void executeTransfer(BankAccount recipient, double amount) {
+        try {
+            if (this.loggedInAccount.getFrozenStatus()) {
+                System.out.println("Error: Your account is currently frozen. Cannot initiate transfer.");
+                return;
+            }
+
+            if (recipient.getFrozenStatus()) {
+                System.out.println("Error: Recipient's account is currently frozen. Cannot complete transfer.");
+                return;
+            }
+
+            this.loggedInAccount.withdraw(amount);
+            recipient.deposit(amount);
+
+            System.out.printf("Successfully transferred $%.2f to user '%s'.%n", amount, recipient.getUsername());
+            System.out.println("Your new balance: ");
+            printUserBalance();
+        } catch (IllegalArgumentException e) {
+            System.out.println("Transfer failed: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    
+    private void searchTransactions() {
+        System.out.println("\n--- Search Transactions ---");
+        System.out.print("Enter type to search (deposit or withdraw): ");
+        String type = scanner.nextLine().trim().toLowerCase();
+
+        System.out.print("Enter amount to search: ");
+        if (!scanner.hasNextDouble()) {
+            System.out.println("Invalid amount entered.");
+            scanner.nextLine();
+            return;
+        }
+        double amount = scanner.nextDouble();
+        scanner.nextLine();
+
+        List<Transaction> results = new ArrayList<>();
+        for (Transaction t : this.loggedInAccount.getTransactions()) {
+            if (t.getType().equalsIgnoreCase(type) && t.getAmount() == amount) {
+                results.add(t);
+            }
+        }
+
+        if (results.isEmpty()) {
+            System.out.println("No transactions found matching the criteria.");
+        } else {
+            System.out.println("Matching Transactions:");
+            for (Transaction t : results) {
+                System.out.println(t);
+            }
+        }
+    }
+    
+    private void changeUsername() {
+    	System.out.print("Enter new username: ");
+    	String newUsername = this.scanner.nextLine();
+    	
+    	if (newUsername.isEmpty()) {
+    		System.out.println("Username cannot be empty.");
+    		return;
+    	}
+    	
+    	loggedInAccount.setUsername(newUsername);
+    	System.out.println("Username updated successfully!");
+    }
+    
+    private void showSpendingProgressBar() {
+        System.out.println("\n--- Monthly Spending Progress ---");
+        System.out.println(loggedInAccount.getMonthlySpendingProgressBar());
     }
 }

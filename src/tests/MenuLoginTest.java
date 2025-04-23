@@ -74,7 +74,7 @@ public class MenuLoginTest {
 
     @Test
     void testCreateAccount_Success() throws Exception {
-        String input = "testUser\npassword123\n";
+        String input = "testUser\npassword123\nChecking\n";
         String output = runInstanceMenuMethodWithInput(input, "createAccount");
 
         assertTrue(output.contains("Account created successfully!"));
@@ -87,10 +87,10 @@ public class MenuLoginTest {
 
     @Test
     void testCreateAccount_DuplicateUsername() throws Exception {
-        String input1 = "testUser\npassword123\n";
+        String input1 = "testUser\npassword123\nChecking\n";
         runInstanceMenuMethodWithInput(input1, "createAccount");
 
-        String input2 = "testUser\notherpass\n";
+        String input2 = "testUser\notherpass\nChecking\n";
         String output2 = runInstanceMenuMethodWithInput(input2, "createAccount");
 
         assertTrue(output2.contains("Username already exists."));
@@ -99,7 +99,7 @@ public class MenuLoginTest {
 
      @Test
     void testCreateAccount_EmptyUsername() throws Exception {
-        String input = "\n";
+    	String input = "\npassword\nChecking\n";
         String output = runInstanceMenuMethodWithInput(input, "createAccount");
 
         assertTrue(output.contains("Username cannot be empty."));
@@ -109,7 +109,7 @@ public class MenuLoginTest {
 
      @Test
     void testCreateAccount_EmptyPassword() throws Exception {
-        String input = "testUser\n\n";
+    	String input = "testUser\n\nChecking\n";
         String output = runInstanceMenuMethodWithInput(input, "createAccount");
 
         assertTrue(output.contains("Password cannot be empty."));
@@ -119,7 +119,7 @@ public class MenuLoginTest {
 
      @Test
      void testLogin_Success() throws Exception {
-         String createInput = "loginUser\nloginPass\n";
+    	 String createInput = "loginUser\nloginPass\nChecking\n";
          runInstanceMenuMethodWithInput(createInput, "createAccount");
 
          String loginInput = "1\nloginUser\nloginPass\n";
@@ -132,7 +132,7 @@ public class MenuLoginTest {
 
     @Test
     void testLogin_WrongPassword() throws Exception {
-        String createInput = "loginUser\nloginPass\n";
+    	String createInput = "loginUser\nloginPass\nChecking\n";
         runInstanceMenuMethodWithInput(createInput, "createAccount");
 
         String loginInput = "1\nloginUser\nwrongPass\n3\n";
@@ -155,7 +155,7 @@ public class MenuLoginTest {
 
     @Test
     void testForgotPassword_Success() throws Exception {
-        String createInput = "resetUser\noldPass\n";
+    	String createInput = "resetUser\noldPass\nChecking\n";
         runInstanceMenuMethodWithInput(createInput, "createAccount");
 
         String forgotInput = "2\nresetUser\nnewPass\nnewPass\n3\n";
@@ -172,7 +172,7 @@ public class MenuLoginTest {
 
     @Test
     void testForgotPassword_PasswordMismatch() throws Exception {
-        String createInput = "resetUser\noldPass\n";
+    	String createInput = "resetUser\noldPass\nChecking\n";
         runInstanceMenuMethodWithInput(createInput, "createAccount");
 
         String forgotInput = "2\nresetUser\nnewPass1\nnewPass2\n3\n";
@@ -188,7 +188,7 @@ public class MenuLoginTest {
 
      @Test
     void testForgotPassword_EmptyNewPassword() throws Exception {
-        String createInput = "resetUser\noldPass\n";
+    	String createInput = "resetUser\noldPass\nChecking\n";
         runInstanceMenuMethodWithInput(createInput, "createAccount");
 
         String forgotInput = "2\nresetUser\n\n\n3\n";
@@ -211,4 +211,29 @@ public class MenuLoginTest {
         assertFalse(forgotOutput.contains("Password updated successfully!"));
         assertNull(getLoggedInAccount(testMenuInstance));
     }
+    
+    @Test
+    void testWarningAfterThreeFailedAttempts() throws Exception {
+        String createInput = "userX\npassX\nChecking\n";
+        runInstanceMenuMethodWithInput(createInput, "createAccount");
+
+        String loginInput = "1\nuserX\nwrong\n1\nuserX\nwrong\n1\nuserX\nwrong\n3\n";
+        String output = runInstanceMenuMethodWithInput(loginInput, "login");
+
+        assertTrue(output.contains("Warning: 3 unsuccessful login attempts."));
+    }
+    
+    @Test
+    void testFreezeAfterFiveFailedAttempts() throws Exception {
+    	String createInput = "userX\npassX\nChecking\n";
+    	runInstanceMenuMethodWithInput(createInput, "createAccount");
+    	
+
+        String loginInput = "1\nuserX\nwrong\n1\nuserX\nwrong\n1\nuserX\nwrong\n1\nuserX\nwrong\n1\nuserX\nwrong\n5\n";
+        String output = runInstanceMenuMethodWithInput(loginInput, "login");
+        HashMap<String, BankAccount> accounts = getAccountsMap(testMenuInstance);
+        assertTrue(accounts.get("userX").getFrozenStatus());
+        assertTrue(output.contains("Account frozen after 5 unsuccessful login attempts."));
+    }
+
 }
