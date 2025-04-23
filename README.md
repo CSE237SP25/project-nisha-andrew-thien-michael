@@ -51,15 +51,27 @@ A bank customer should be able to
 What user stories do you intend to complete next iteration?
 A bank customer should be able to 
 - view previous transactions
-- search for a specific transaction
 - set monthly spending limits
 - forget password
+- track their balance
 - see a welcome message when they log in
 
 # Attempted tasks that do not work yet
 Is there anything that you implemented but doesn't currently work?
 - we started to implement the view previous transactions, but it does not currently work. We have planned this for the next iteration. 
-- our login and signup may not work 
+- our login and signup may not work
+
+# User stories for Iteration 3
+What user stories do you intend to complete next iteration?
+A bank customer should be able to 
+- change their username
+- be locked out of their account after five incorrect login attempts
+- see a warning message after three incorrect login attempts
+- search for a specific transaction
+- order transactions from biggest to smallest
+- transfer funds to another account
+- see a percentage bar for their spending limit
+- see a warning for approaching the spending limit
 
 Commands to run our code
 
