@@ -61,8 +61,15 @@ public class BankAccount {
 		    balanceHistory.add(this.balance);
 		    this.transactions.add(new Transaction("withdraw", amount));
             System.out.println("Withdrawn: " + amount);
-		}
-	}
+            
+    		if (this.monthlySpendingLimit != Double.MAX_VALUE) {
+    			double percentUsed = (this.currentSpent / this.monthlySpendingLimit) * 100;
+    			if (percentUsed >= 80 && percentUsed < 100) {
+    				System.out.printf("⚠️ Warning: You've used %.1f%% of your monthly spending limit!\n", percentUsed);
+    			}
+    		}
+    	}
+    }
 
 	public void depositMultiplePeriods(double amount, int periods) {
 		if (amount < 0 || periods <= 0) {

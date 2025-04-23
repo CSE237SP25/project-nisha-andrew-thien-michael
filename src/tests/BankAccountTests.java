@@ -404,4 +404,36 @@ public class BankAccountTests {
 	      assertTrue(results.get(1).getType().equalsIgnoreCase("deposit"));
 	      assertEquals(100.0, results.get(1).getAmount(), 0.001);
 	  }
+
+	  @Test
+	  public void testWarningAt80PercentSpendingLimit() {
+	      BankAccount account = new BankAccount("Checking");
+	      account.deposit(1000);
+	      account.setMonthlySpendingLimit(100);
+
+	      ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+	      PrintStream originalOut = System.out;
+	      System.setOut(new PrintStream(outContent));
+	      account.withdraw(80);
+	      System.setOut(originalOut);
+	      String output = outContent.toString();
+	      
+	      assertTrue(output.contains("⚠️ Warning"));
+	      assertTrue(output.contains("80.0%"));
+	  }
+	  
+	  @Test
+	  public void testNoWarningWhenLimitIsMaxValue() {
+	      BankAccount account = new BankAccount("Checking");
+	      account.deposit(1000);
+	      // limit is still MAX_VALUE
+	      ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+	      PrintStream originalOut = System.out;
+	      System.setOut(new PrintStream(outContent));
+	      account.withdraw(500);
+	      System.setOut(originalOut);
+
+	      String output = outContent.toString();
+	      assertFalse(output.contains("⚠️ Warning"));
+	  }
 }
